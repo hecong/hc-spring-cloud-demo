@@ -1,0 +1,12 @@
+server:
+  port: 12002
+  servlet:
+    context-path: /api
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: hc-user-service
+  profiles:
+    active: dev

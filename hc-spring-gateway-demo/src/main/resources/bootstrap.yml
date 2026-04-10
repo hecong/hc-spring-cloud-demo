@@ -1,0 +1,10 @@
+server:
+  port: 12001
+spring:
+  application:
+    name: hc-gateway
+  profiles:
+    active: dev
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true

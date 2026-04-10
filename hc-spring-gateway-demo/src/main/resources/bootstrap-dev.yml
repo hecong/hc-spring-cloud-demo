@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    nacos:
+      # Nacos 配置中心（优先加载）
+      config:
+        server-addr: 192.168.218.75:8848
+        namespace: scm_dev
+        group: DEFAULT_GROUP
+        username: base_cloud
+        password: base_cloud
+        file-extension: yaml
+        refresh-enabled: true
+        # 共享配置
+        shared-configs:
+          - data-id: hc-redis.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+      # Nacos 服务发现
+      discovery:
+        namespace: scm_dev
+        group: DEFAULT_GROUP
+        username: base_cloud
+        password: base_cloud
+      server-addr: 192.168.218.75:8848
+  # 新增：指定导入Nacos配置（关键配置）
+  config:
+    import:
+      - nacos:${spring.cloud.nacos.config.server-addr}?namespace=${spring.cloud.nacos.config.namespace}&group=${spring.cloud.nacos.config.group}
