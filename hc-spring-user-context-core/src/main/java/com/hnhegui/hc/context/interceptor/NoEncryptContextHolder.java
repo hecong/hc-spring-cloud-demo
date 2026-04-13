@@ -1,7 +1,5 @@
 package com.hnhegui.hc.context.interceptor;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
-
 /**
  * NoEncrypt 标记持有者
  * 用于在方法调用链中传递是否不加密的标记

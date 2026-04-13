@@ -2,6 +2,7 @@ package com.hnhegui.hc.context.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hnhegui.hc.context.core.UserContext;
+import lombok.Getter;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -26,6 +27,11 @@ public class UserContextEncryptUtil {
     private static final int IV_LENGTH = 16;
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    /**
+     * -- GETTER --
+     *  获取加密密钥
+     */
+    @Getter
     private static String secretKey;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -44,13 +50,6 @@ public class UserContextEncryptUtil {
             throw new IllegalArgumentException("加密密钥长度不能少于16位");
         }
         secretKey = key;
-    }
-
-    /**
-     * 获取加密密钥
-     */
-    public static String getSecretKey() {
-        return secretKey;
     }
 
     /**

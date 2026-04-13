@@ -31,6 +31,8 @@ public class AuthController {
             return Result.error("用户名或密码错误");
         }
         saTokenHelper.login(1L);
+        saTokenHelper.getRoleList();
+        saTokenHelper.getPermissionList();
         Map<String, Object> data = new HashMap<>();
         data.put("token", saTokenHelper.getTokenValue());
         data.put("tokenName", saTokenHelper.getTokenName());

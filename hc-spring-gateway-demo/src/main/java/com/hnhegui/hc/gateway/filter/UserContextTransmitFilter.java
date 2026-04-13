@@ -1,5 +1,6 @@
-package com.hnhegui.hc.context.filter;
+package com.hnhegui.hc.gateway.filter;
 
+import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpUtil;
 import com.hnhegui.hc.context.constant.UserContextConstant;
 import com.hnhegui.hc.context.core.UserContext;
@@ -33,7 +34,8 @@ public class UserContextTransmitFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-        
+
+        SaReactorSyncHolder.setContext(exchange);
         // 1. 检查是否已登录
         if (!StpUtil.isLogin()) {
             return chain.filter(exchange);

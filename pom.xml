@@ -12,6 +12,7 @@
         <module>hc-spring-gateway-demo</module>
         <module>hc-spring-user-demo</module>
         <module>hc-spring-user-context-core</module>
+        <module>hc-spring-common</module>
     </modules>
 
     <properties>
@@ -66,6 +67,12 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
                 <version>2.14.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.hnhegui.hc</groupId>
+                <artifactId>hc-spring-common</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

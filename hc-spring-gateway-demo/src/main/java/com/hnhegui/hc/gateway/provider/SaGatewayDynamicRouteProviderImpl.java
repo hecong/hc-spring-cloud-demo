@@ -1,8 +1,9 @@
 package com.hnhegui.hc.gateway.provider;
 
+import com.hc.framework.common.model.DynamicAuthRoute;
 import com.hc.framework.redis.util.RedisCacheUtils;
-import com.hc.framework.satoken.gateway.handler.DynamicAuthRoute;
 import com.hc.framework.satoken.gateway.handler.SaGatewayDynamicRouteProvider;
+import com.hnhegui.hc.common.constant.CommonCacheConstants;
 
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class SaGatewayDynamicRouteProviderImpl implements SaGatewayDynamicRouteP
     @Override
     public List<DynamicAuthRoute> loadRoutes() {
         // 从 Redis 或远程服务加载
-        String key = "sa:menu:";
-        return redisCacheUtils.lRange(key, 0, -1);
+        return redisCacheUtils.lRange(CommonCacheConstants.DYNAMIC_AUTH, 0, -1);
+
     }
 
     @Override

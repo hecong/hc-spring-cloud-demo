@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
  * Feign 用户上下文拦截器
  * 自动将当前用户上下文透传到下游服务
@@ -61,12 +63,8 @@ public class FeignContextInterceptor implements RequestInterceptor {
 
         // 3. 添加到 Header
         template.header(headerName, value);
-        if (encryptedFlag != null) {
-            template.header(encryptedHeaderName, encryptedFlag);
-        } else {
-            // 移除加密标识（如果是明文传输）
-            template.header(encryptedHeaderName, "");
-        }
+        // 移除加密标识（如果是明文传输）
+        template.header(encryptedHeaderName, Objects.requireNonNullElse(encryptedFlag, ""));
     }
 
     /**

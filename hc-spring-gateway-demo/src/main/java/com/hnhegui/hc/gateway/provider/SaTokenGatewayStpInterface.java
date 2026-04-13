@@ -3,18 +3,18 @@ package com.hnhegui.hc.gateway.provider;
 import cn.dev33.satoken.stp.StpInterface;
 import com.hc.framework.redis.util.RedisCacheUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.hc.framework.common.constant.CacheConstants.PERMISSIONS_SUFFIX;
+import static com.hc.framework.common.constant.CacheConstants.ROLES_SUFFIX;
+
 
 /**
  * @author hecong
  * @since 2026/4/10 09:20
  */
 @RequiredArgsConstructor
-@Component
-@ConditionalOnBean(RedisCacheUtils.class)
 public class SaTokenGatewayStpInterface implements StpInterface {
 
     private final RedisCacheUtils redisCacheUtils;
@@ -22,13 +22,13 @@ public class SaTokenGatewayStpInterface implements StpInterface {
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        String key = "sa:permission:" + loginId;
-        return redisCacheUtils.lRange(key, 0, -1);
+        String key = PERMISSIONS_SUFFIX + loginId;
+        return redisCacheUtils.get(key);
     }
 
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        String key = "sa:role:" + loginId;
-        return redisCacheUtils.lRange(key, 0, -1);
+        String key = ROLES_SUFFIX + loginId;
+        return redisCacheUtils.get(key);
     }
 }

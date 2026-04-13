@@ -1,9 +1,11 @@
 package com.hnhegui.hc.gateway.config;
 
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
+import cn.dev33.satoken.stp.StpInterface;
 import com.hc.framework.redis.util.RedisCacheUtils;
 import com.hc.framework.satoken.gateway.handler.SaGatewayDynamicRouteProvider;
 import com.hnhegui.hc.gateway.provider.SaGatewayDynamicRouteProviderImpl;
+import com.hnhegui.hc.gateway.provider.SaTokenGatewayStpInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
@@ -41,5 +43,13 @@ public class GatewayConfig {
     @Bean
     public SaGatewayDynamicRouteProvider saGatewayDynamicRouteProvider(RedisCacheUtils  redisCacheUtils) {
         return new SaGatewayDynamicRouteProviderImpl(redisCacheUtils);
+    }
+
+    /**
+     * 网关动态路由提供者
+     */
+    @Bean
+    public StpInterface saTokenGatewayStpInterface(RedisCacheUtils  redisCacheUtils) {
+        return new SaTokenGatewayStpInterface(redisCacheUtils);
     }
 }

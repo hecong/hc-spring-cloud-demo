@@ -12,4 +12,9 @@ public interface PermissionService {
     boolean deletePermission(Long id);
     PermissionResponse getPermissionById(Long id);
     List<PermissionResponse> listPermissions();
+
+    /**
+     * 初始化动态鉴权
+     */
+    void initDynamicAuthRouteCache();
 }

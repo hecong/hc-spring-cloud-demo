@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sys/permission")
+@RequestMapping("/permission")
 public class PermissionController {
     private final PermissionService permissionService;
 
@@ -48,5 +48,14 @@ public class PermissionController {
     public Result<PermissionResponse> get(@PathVariable Long id) {
         PermissionResponse permissionResponse = permissionService.getPermissionById(id);
         return Result.success(permissionResponse);
+    }
+
+    /**
+     * 根据菜单初始化路由权限缓存
+     */
+    @PostMapping("/init")
+    public Result<Void> initDynamicAuthRouteCache(){
+        permissionService.initDynamicAuthRouteCache();
+        return Result.success();
     }
 }
