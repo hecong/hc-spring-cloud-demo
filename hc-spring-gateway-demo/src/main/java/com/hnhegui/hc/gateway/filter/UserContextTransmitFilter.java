@@ -35,33 +35,45 @@ public class UserContextTransmitFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
 
-        SaReactorSyncHolder.setContext(exchange);
-        // 1. 检查是否已登录
-        if (!StpUtil.isLogin()) {
-            return chain.filter(exchange);
-        }
-
         try {
-            // 2. 构建用户上下文
+            // 1. 设置 Sa-Token 上下文
+            SaReactorSyncHolder.setContext(exchange);
+
+            // 2. 检查是否已登录
+            if (!StpUtil.isLogin()) {
+                return chain.filter(exchange)
+                    // 登录态不成立也要清理
+                    .doFinally(s -> SaReactorSyncHolder.clearContext());
+            }
+
+            // 3. 构建用户上下文
             UserContext userContext = buildUserContext();
-            
-            // 3. 加密并写入 Header
+
+            // 4. 加密
             String encrypted = UserContextEncryptUtil.encrypt(userContext);
-            
+
+            // 5. 改写请求头
             ServerHttpRequest modifiedRequest = request.mutate()
-                    .header(UserContextConstant.DEFAULT_HEADER_NAME, encrypted)
-                    .header(UserContextConstant.DEFAULT_ENCRYPTED_HEADER_NAME, UserContextConstant.ENCRYPTED_VALUE)
-                    .build();
-            
+                .header(UserContextConstant.DEFAULT_HEADER_NAME, encrypted)
+                .header(UserContextConstant.DEFAULT_ENCRYPTED_HEADER_NAME, UserContextConstant.ENCRYPTED_VALUE)
+                .build();
+
             ServerWebExchange modifiedExchange = exchange.mutate()
-                    .request(modifiedRequest)
-                    .build();
-            
+                .request(modifiedRequest)
+                .build();
+
+            // 6. 正常执行 + 最终清理
             return chain.filter(modifiedExchange)
-                    .doFinally(signalType -> UserContextHolder.clear());
-            
+                .doFinally(signalType -> {
+                    // 清理两个上下文！！！
+                    UserContextHolder.clear();
+                    SaReactorSyncHolder.clearContext();
+                });
+
         } catch (Exception e) {
             log.error("[用户上下文] 网关转发失败", e);
+            // 异常分支也必须清理
+            SaReactorSyncHolder.clearContext();
             return chain.filter(exchange);
         }
     }
@@ -94,11 +106,11 @@ public class UserContextTransmitFilter implements WebFilter {
         }
 
         return UserContext.builder()
-                .userId(userId)
-                .roles(roles)
-                .permissions(permissions)
-                .loginType(StpUtil.getLoginType())
-                .token(StpUtil.getTokenValue())
-                .build();
+            .userId(userId)
+            .roles(roles)
+            .permissions(permissions)
+            .loginType(StpUtil.getLoginType())
+            .token(StpUtil.getTokenValue())
+            .build();
     }
 }

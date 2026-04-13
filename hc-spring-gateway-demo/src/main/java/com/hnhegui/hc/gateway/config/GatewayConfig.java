@@ -32,7 +32,10 @@ public class GatewayConfig {
             SaReactorSyncHolder.setContext(exchange);
             log.info("[网关请求] {} {}", method, path);
 
-            return chain.filter(exchange).then(Mono.fromRunnable(() -> log.info("[网关响应] {} {} 完成", method, path)));
+            return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+                log.info("[网关响应] {} {} 完成", method, path);
+                SaReactorSyncHolder.clearContext();
+            }));
         };
     }
 
@@ -41,7 +44,7 @@ public class GatewayConfig {
      * 网关动态路由提供者
      */
     @Bean
-    public SaGatewayDynamicRouteProvider saGatewayDynamicRouteProvider(RedisCacheUtils  redisCacheUtils) {
+    public SaGatewayDynamicRouteProvider saGatewayDynamicRouteProvider(RedisCacheUtils redisCacheUtils) {
         return new SaGatewayDynamicRouteProviderImpl(redisCacheUtils);
     }
 
@@ -49,7 +52,7 @@ public class GatewayConfig {
      * 网关动态路由提供者
      */
     @Bean
-    public StpInterface saTokenGatewayStpInterface(RedisCacheUtils  redisCacheUtils) {
+    public StpInterface saTokenGatewayStpInterface(RedisCacheUtils redisCacheUtils) {
         return new SaTokenGatewayStpInterface(redisCacheUtils);
     }
 }
