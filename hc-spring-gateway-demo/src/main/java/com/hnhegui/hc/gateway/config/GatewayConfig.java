@@ -4,6 +4,7 @@ import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpInterface;
 import com.hc.framework.redis.util.RedisCacheUtils;
 import com.hc.framework.satoken.gateway.handler.SaGatewayDynamicRouteProvider;
+import com.hnhegui.hc.gateway.listener.SaRouteRefreshListener;
 import com.hnhegui.hc.gateway.provider.SaGatewayDynamicRouteProviderImpl;
 import com.hnhegui.hc.gateway.provider.SaTokenGatewayStpInterface;
 import lombok.extern.slf4j.Slf4j;
@@ -55,4 +56,6 @@ public class GatewayConfig {
     public StpInterface saTokenGatewayStpInterface(RedisCacheUtils redisCacheUtils) {
         return new SaTokenGatewayStpInterface(redisCacheUtils);
     }
+
+
 }

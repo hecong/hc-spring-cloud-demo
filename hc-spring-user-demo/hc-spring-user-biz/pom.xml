@@ -95,6 +95,11 @@
             <groupId>com.hnhegui.hc</groupId>
             <artifactId>hc-spring-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.hnhegui.hc</groupId>
+            <artifactId>hc-spring-user-context-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

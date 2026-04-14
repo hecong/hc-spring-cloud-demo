@@ -73,6 +73,7 @@ public class UserContextTransmitFilter implements WebFilter {
         } catch (Exception e) {
             log.error("[用户上下文] 网关转发失败", e);
             // 异常分支也必须清理
+            UserContextHolder.clear();
             SaReactorSyncHolder.clearContext();
             return chain.filter(exchange);
         }
@@ -83,6 +84,10 @@ public class UserContextTransmitFilter implements WebFilter {
      */
     private UserContext buildUserContext() {
         Object loginId = StpUtil.getLoginId();
+        Object userContext = StpUtil.getSession().get("userContext");
+        if (userContext != null) {
+            return (UserContext) userContext;
+        }
         Long userId = null;
         if (loginId instanceof Long) {
             userId = (Long) loginId;
@@ -104,7 +109,6 @@ public class UserContextTransmitFilter implements WebFilter {
         if (permissions == null) {
             permissions = Collections.emptyList();
         }
-
         return UserContext.builder()
             .userId(userId)
             .roles(roles)

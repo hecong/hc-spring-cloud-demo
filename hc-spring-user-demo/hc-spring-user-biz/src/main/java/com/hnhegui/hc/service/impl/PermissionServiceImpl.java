@@ -3,6 +3,7 @@ package com.hnhegui.hc.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hc.framework.common.model.DynamicAuthRoute;
 import com.hc.framework.redis.util.RedisCacheUtils;
+import com.hnhegui.hc.common.constant.CacheConstant;
 import com.hnhegui.hc.common.constant.CommonCacheConstants;
 import com.hnhegui.hc.converter.PermissionConverter;
 import com.hnhegui.hc.dto.PermissionRequest;
@@ -13,9 +14,11 @@ import com.hnhegui.hc.entity.UserRole;
 import com.hnhegui.hc.mapper.PermissionMapper;
 import com.hnhegui.hc.mapper.RolePermissionMapper;
 import com.hnhegui.hc.mapper.UserRoleMapper;
+import com.hnhegui.hc.publisher.MessagePublisher;
 import com.hnhegui.hc.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final RolePermissionMapper rolePermissionMapper;
     private final UserRoleMapper userRoleMapper;
     private final RedisCacheUtils  redisCacheUtils;
-
+    private final MessagePublisher messagePublisher;
 
     @Override
     public List<PermissionResponse> getPermissionsByRoleId(Long roleId) {
@@ -109,5 +112,8 @@ public class PermissionServiceImpl implements PermissionService {
         log.info("===============动态路由缓存初始化完成=================");
         List<DynamicAuthRoute> dynamicAuthRouteList = redisCacheUtils.lRange(CommonCacheConstants.DYNAMIC_AUTH, 0, -1);
         log.info("===============动态路由缓存内容=================={}", dynamicAuthRouteList);
+        Long refresh = messagePublisher.publish(CacheConstant.GATEWAY_ROUTE_REFRESH_CHANNEL, "refresh");
+        log.info("===============订单创建消息发送完成==================");
+        log.info("===============动态路由缓存刷新结果=================={}", refresh);
     }
 }
