@@ -49,4 +49,9 @@ public final class CommonConstant {
      */
     public static final String HEADER_TENANT_ID = "X-Tenant-Id";
 
+    /**
+     * 用户上下文
+     */
+    public static final String USER_CONTEXT = "userContext";
+
 }

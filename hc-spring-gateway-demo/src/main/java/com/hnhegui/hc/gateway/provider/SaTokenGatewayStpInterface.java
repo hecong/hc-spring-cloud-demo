@@ -1,13 +1,13 @@
 package com.hnhegui.hc.gateway.provider;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.hc.framework.redis.util.RedisCacheUtils;
+import cn.dev33.satoken.stp.StpUtil;
+import com.hnhegui.hc.context.core.UserContext;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static com.hc.framework.common.constant.CacheConstants.PERMISSIONS_SUFFIX;
-import static com.hc.framework.common.constant.CacheConstants.ROLES_SUFFIX;
+import static com.hnhegui.hc.common.constant.CommonConstant.USER_CONTEXT;
 
 
 /**
@@ -17,18 +17,17 @@ import static com.hc.framework.common.constant.CacheConstants.ROLES_SUFFIX;
 @RequiredArgsConstructor
 public class SaTokenGatewayStpInterface implements StpInterface {
 
-    private final RedisCacheUtils redisCacheUtils;
 
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        String key = PERMISSIONS_SUFFIX + loginId;
-        return redisCacheUtils.get(key);
+        UserContext userContext = (UserContext) StpUtil.getSession().get(USER_CONTEXT);
+        return userContext.getPermissions();
     }
 
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        String key = ROLES_SUFFIX + loginId;
-        return redisCacheUtils.get(key);
+        UserContext userContext = (UserContext) StpUtil.getSession().get(USER_CONTEXT);
+        return userContext.getRoles();
     }
 }

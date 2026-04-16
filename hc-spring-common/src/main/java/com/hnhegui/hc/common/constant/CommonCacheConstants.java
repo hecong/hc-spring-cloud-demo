@@ -16,4 +16,9 @@ public interface CommonCacheConstants {
      */
     String DYNAMIC_AUTH = CACHE_PREFIX + "dynamic:auth";
 
+    /**
+     * 网关路由刷新 Redis Pub/Sub 频道
+     */
+    String GATEWAY_ROUTE_REFRESH_CHANNEL = "gateway:route:refresh";
+
 }

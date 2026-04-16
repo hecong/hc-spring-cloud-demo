@@ -2,7 +2,7 @@ package com.hnhegui.hc.service;
 
 import com.hnhegui.hc.dto.UserRequest;
 import com.hnhegui.hc.dto.UserResponse;
-import com.hnhegui.hc.entity.User;
+
 import java.util.List;
 
 public interface UserService {

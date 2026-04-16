@@ -1,5 +1,6 @@
 package com.hnhegui.hc.controller;
 
+import com.hc.framework.redis.core.CustomGenericJackson2JsonRedisSerializer;
 import com.hc.framework.web.model.Result;
 import com.hnhegui.hc.dto.UserRequest;
 import com.hnhegui.hc.dto.UserResponse;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sys/user")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 

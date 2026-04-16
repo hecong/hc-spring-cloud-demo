@@ -19,6 +19,8 @@ import reactor.core.publisher.Mono;
 import java.util.Collections;
 import java.util.List;
 
+import static com.hnhegui.hc.common.constant.CommonConstant.USER_CONTEXT;
+
 /**
  * 网关用户上下文转发过滤器
  * 从 Sa-Token 提取用户信息，加密后写入请求 Header
@@ -84,7 +86,7 @@ public class UserContextTransmitFilter implements WebFilter {
      */
     private UserContext buildUserContext() {
         Object loginId = StpUtil.getLoginId();
-        Object userContext = StpUtil.getSession().get("userContext");
+        Object userContext = StpUtil.getSession().get(USER_CONTEXT);
         if (userContext != null) {
             return (UserContext) userContext;
         }

@@ -3,7 +3,6 @@ package com.hnhegui.hc.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hc.framework.common.model.DynamicAuthRoute;
 import com.hc.framework.redis.util.RedisCacheUtils;
-import com.hnhegui.hc.common.constant.CacheConstant;
 import com.hnhegui.hc.common.constant.CommonCacheConstants;
 import com.hnhegui.hc.converter.PermissionConverter;
 import com.hnhegui.hc.dto.PermissionRequest;
@@ -18,12 +17,9 @@ import com.hnhegui.hc.publisher.MessagePublisher;
 import com.hnhegui.hc.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,13 +29,13 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionMapper permissionMapper;
     private final RolePermissionMapper rolePermissionMapper;
     private final UserRoleMapper userRoleMapper;
-    private final RedisCacheUtils  redisCacheUtils;
+    private final RedisCacheUtils redisCacheUtils;
     private final MessagePublisher messagePublisher;
 
     @Override
     public List<PermissionResponse> getPermissionsByRoleId(Long roleId) {
         List<Long> permissionIds = rolePermissionMapper.selectList(new LambdaQueryWrapper<RolePermission>().eq(RolePermission::getRoleId, roleId))
-                .stream().map(RolePermission::getPermissionId).toList();
+            .stream().map(RolePermission::getPermissionId).toList();
         if (permissionIds.isEmpty()) {
             return List.of();
         }
@@ -50,12 +46,12 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<PermissionResponse> getPermissionsByUserId(Long userId) {
         List<Long> roleIds = userRoleMapper.selectList(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId))
-                .stream().map(UserRole::getRoleId).toList();
+            .stream().map(UserRole::getRoleId).toList();
         if (roleIds.isEmpty()) {
             return List.of();
         }
         List<Long> permissionIds = rolePermissionMapper.selectList(new LambdaQueryWrapper<RolePermission>().in(RolePermission::getRoleId, roleIds))
-                .stream().map(RolePermission::getPermissionId).collect(Collectors.toSet()).stream().toList();
+            .stream().map(RolePermission::getPermissionId).collect(Collectors.toSet()).stream().toList();
         if (permissionIds.isEmpty()) {
             return List.of();
         }
@@ -112,7 +108,7 @@ public class PermissionServiceImpl implements PermissionService {
         log.info("===============动态路由缓存初始化完成=================");
         List<DynamicAuthRoute> dynamicAuthRouteList = redisCacheUtils.lRange(CommonCacheConstants.DYNAMIC_AUTH, 0, -1);
         log.info("===============动态路由缓存内容=================={}", dynamicAuthRouteList);
-        Long refresh = messagePublisher.publish(CacheConstant.GATEWAY_ROUTE_REFRESH_CHANNEL, "refresh");
+        Long refresh = messagePublisher.publish(CommonCacheConstants.GATEWAY_ROUTE_REFRESH_CHANNEL, "refresh");
         log.info("===============订单创建消息发送完成==================");
         log.info("===============动态路由缓存刷新结果=================={}", refresh);
     }

@@ -53,8 +53,8 @@ public class GatewayConfig {
      * 网关动态路由提供者
      */
     @Bean
-    public StpInterface saTokenGatewayStpInterface(RedisCacheUtils redisCacheUtils) {
-        return new SaTokenGatewayStpInterface(redisCacheUtils);
+    public StpInterface saTokenGatewayStpInterface() {
+        return new SaTokenGatewayStpInterface();
     }
 
 

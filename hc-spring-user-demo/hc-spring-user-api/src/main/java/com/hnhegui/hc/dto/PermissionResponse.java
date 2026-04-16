@@ -1,6 +1,8 @@
 package com.hnhegui.hc.dto;
 
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -11,6 +13,6 @@ public class PermissionResponse {
     private String type;
     private String path;
     private Long parentId;
-    private Date createTime;
-    private Date updateTime;
+    private LocalDateTime  createTime;
+    private LocalDateTime updateTime;
 }

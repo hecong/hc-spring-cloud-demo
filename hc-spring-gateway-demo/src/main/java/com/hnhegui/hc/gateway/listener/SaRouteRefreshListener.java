@@ -1,14 +1,12 @@
 package com.hnhegui.hc.gateway.listener;
 
 import com.hc.framework.satoken.gateway.handler.SaGatewayDynamicRouteProvider;
-import com.hnhegui.hc.common.constant.CacheConstant;
+import com.hnhegui.hc.common.constant.CommonCacheConstants;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
-import org.springframework.data.redis.connection.Message;
-import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,7 +23,7 @@ public class SaRouteRefreshListener {
     /**
      * Redis 路由刷新频道
      */
-    public static final String ROUTE_REFRESH_CHANNEL = CacheConstant.GATEWAY_ROUTE_REFRESH_CHANNEL;
+    public static final String ROUTE_REFRESH_CHANNEL = CommonCacheConstants.GATEWAY_ROUTE_REFRESH_CHANNEL;
 
     private final SaGatewayDynamicRouteProvider saGatewayDynamicRouteProvider;
 
