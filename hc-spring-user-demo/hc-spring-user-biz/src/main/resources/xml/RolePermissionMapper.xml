@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.role.RolePermissionMapper">
+    <insert id="insertBatch">
+        insert into sys_role_permission (id, role_id, permission_id) values
+        <foreach collection="list" item="rolePermission" separator=",">
+            (#{rolePermission.id}, #{rolePermission.roleId}, #{rolePermission.permissionId})
+        </foreach>
+    </insert>
+
+    <delete id="deletePhysicalByRoleId">
+        delete from sys_role_permission where role_id = #{roleId}
+    </delete>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.role.RoleMapper">
+
+    <insert id="insertOrUpdateBatch">
+        insert into role (id, code, name, description) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.code}, #{item.name}, #{item.description})
+        </foreach>
+        on duplicate key update code = values(code), name = values(name), description = values(description)
+    </insert>
+
+    <insert id="insertBatch">
+        insert into role (id,code ,name, description) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.code}, #{item.name}, #{item.description})
+        </foreach>
+    </insert>
+</mapper>

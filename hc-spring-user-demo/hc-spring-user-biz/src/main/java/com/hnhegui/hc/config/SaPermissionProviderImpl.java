@@ -1,10 +1,10 @@
 package com.hnhegui.hc.config;
 
 import com.hc.framework.satoken.handler.SaPermissionProvider;
-import com.hnhegui.hc.dto.PermissionResponse;
-import com.hnhegui.hc.dto.RoleResponse;
-import com.hnhegui.hc.service.RoleService;
-import com.hnhegui.hc.service.PermissionService;
+import com.hnhegui.hc.controller.permission.response.PermissionResponse;
+import com.hnhegui.hc.controller.role.response.RoleResponse;
+import com.hnhegui.hc.service.role.RoleService;
+import com.hnhegui.hc.service.permission.PermissionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

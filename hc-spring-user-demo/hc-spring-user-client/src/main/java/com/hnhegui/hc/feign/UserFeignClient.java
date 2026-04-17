@@ -1,8 +1,6 @@
 package com.hnhegui.hc.feign;
 
-import com.hnhegui.hc.dto.PermissionResponse;
-import com.hnhegui.hc.dto.RoleResponse;
-import com.hnhegui.hc.dto.UserResponse;
+import com.hnhegui.hc.feign.response.UserDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,30 +14,32 @@ import java.util.List;
 @FeignClient(name = "user-service", fallbackFactory = UserFeignClientFallbackFactory.class)
 public interface UserFeignClient {
 
+    /**
+     * 列出所有用户
+     *
+     * @return 用户列表
+     */
     @GetMapping("/api/internal/user/list")
-    List<UserResponse> listUsers();
+    List<UserDTO> listUsers();
 
+    /**
+     * 根据ID获取用户
+     *
+     * @param id 用户ID
+     * @return 用户
+     */
     @GetMapping("/api/internal/user/get/{id}")
-    UserResponse getUserById(@PathVariable("id") Long id);
+    UserDTO getUserById(@PathVariable("id") Long id);
+
+    /**
+     * 根据用户名获取用户
+     *
+     * @param username 用户名
+     * @return 用户
+     */
 
     @GetMapping("/api/internal/user/getByUsername/{username}")
-    UserResponse getUserByUsername(@PathVariable("username") String username);
+    UserDTO getUserByUsername(@PathVariable("username") String username);
 
-    @GetMapping("/api/internal/role/list")
-    List<RoleResponse> listRoles();
 
-    @GetMapping("/api/internal/role/get/{id}")
-    RoleResponse getRoleById(@PathVariable("id") Long id);
-
-    @GetMapping("/api/internal/permission/list")
-    List<PermissionResponse> listPermissions();
-
-    @GetMapping("/api/internal/permission/get/{id}")
-    PermissionResponse getPermissionById(@PathVariable("id") Long id);
-
-    @GetMapping("/api/internal/role/getByUserId/{userId}")
-    List<RoleResponse> getRolesByUserId(@PathVariable("userId") Long userId);
-
-    @GetMapping("/api/internal/permission/getByUserId/{userId}")
-    List<PermissionResponse> getPermissionsByUserId(@PathVariable("userId") Long userId);
 }
