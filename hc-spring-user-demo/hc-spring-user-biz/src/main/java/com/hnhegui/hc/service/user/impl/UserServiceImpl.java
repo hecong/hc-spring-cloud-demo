@@ -1,7 +1,6 @@
 package com.hnhegui.hc.service.user.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hc.framework.mybatis.service.BaseServiceImpl;
 import com.hnhegui.hc.bo.user.UserBO;

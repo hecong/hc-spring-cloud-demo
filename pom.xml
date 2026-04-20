@@ -11,6 +11,7 @@
     <modules>
         <module>hc-spring-gateway-demo</module>
         <module>hc-spring-user-demo</module>
+        <module>hc-spring-order-demo</module>
         <module>hc-spring-user-context-core</module>
         <module>hc-spring-common</module>
     </modules>
@@ -22,6 +23,8 @@
         <caffeine.version>3.2.3</caffeine.version>
         <lombok.version>1.18.30</lombok.version>
         <mapstrust.version>1.5.5.Final</mapstrust.version>
+        <hc.framework.version>1.0-SNAPSHOT</hc.framework.version>
+        <ttl.version>2.14.2</ttl.version>
     </properties>
 
     <dependencyManagement>
@@ -29,7 +32,7 @@
             <dependency>
                 <groupId>com.hnhegui.framework</groupId>
                 <artifactId>hc-spring-cloud-framework</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${hc.framework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -66,13 +69,18 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
-                <version>2.14.2</version>
+                <version>${ttl.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.hnhegui.hc</groupId>
                 <artifactId>hc-spring-common</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hnhegui.hc</groupId>
+                <artifactId>hc-spring-user-context-core</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

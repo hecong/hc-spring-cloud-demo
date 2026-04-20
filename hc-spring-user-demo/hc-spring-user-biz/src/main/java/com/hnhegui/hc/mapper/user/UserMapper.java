@@ -2,7 +2,6 @@ package com.hnhegui.hc.mapper.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hnhegui.hc.bo.user.UserPageQueryBO;
@@ -16,7 +15,7 @@ import java.util.List;
  * 用户Mapper接口
  *
  * @author system
- * @date 2025-01-01
+ * @since 2026-04-20
  */
 public interface UserMapper extends BaseMapper<User> {
 
@@ -44,11 +43,9 @@ public interface UserMapper extends BaseMapper<User> {
      */
     default Page<User> selectUsersByPage(UserPageQueryBO queryBO) {
         LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery();
-
         wrapper.eq(StrUtil.isNotBlank(queryBO.getUsername()), User::getUsername, queryBO.getUsername())
             .eq(StrUtil.isNotBlank(queryBO.getPhone()), User::getPhone, queryBO.getPhone())
             .eq(StrUtil.isNotBlank(queryBO.getName()), User::getName, queryBO.getName());
-
         return this.selectPage(queryBO.toPage(), wrapper);
     }
 }

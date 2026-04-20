@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.hnhegui.hc</groupId>
         <artifactId>hc-spring-cloud-demo</artifactId>
@@ -10,44 +11,32 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>hc-spring-user-demo</artifactId>
+    <artifactId>hc-spring-order-demo</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>hc-spring-user-api</module>
-        <module>hc-spring-user-client</module>
-        <module>hc-spring-user-biz</module>
+        <module>hc-spring-order-api</module>
+        <module>hc-spring-order-client</module>
+        <module>hc-spring-order-biz</module>
     </modules>
-
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.hnhegui.hc</groupId>
-                <artifactId>hc-spring-common</artifactId>
+                <artifactId>hc-spring-order-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.hnhegui.hc</groupId>
-                <artifactId>hc-spring-user-api</artifactId>
+                <artifactId>hc-spring-order-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.hnhegui.hc</groupId>
-                <artifactId>hc-spring-user-client</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.hnhegui.hc</groupId>
-                <artifactId>hc-spring-user-biz</artifactId>
+                <artifactId>hc-spring-order-biz</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>

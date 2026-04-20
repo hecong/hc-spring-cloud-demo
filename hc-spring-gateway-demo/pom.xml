@@ -69,14 +69,12 @@
         <dependency>
             <groupId>com.hnhegui.hc</groupId>
             <artifactId>hc-spring-user-context-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.hnhegui.hc</groupId>
             <artifactId>hc-spring-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
