@@ -6,6 +6,7 @@ import com.hnhegui.hc.bo.user.UserCreateBO;
 import com.hnhegui.hc.bo.user.UserPageQueryBO;
 import com.hnhegui.hc.controller.user.request.UserPageRequest;
 import com.hnhegui.hc.controller.user.request.UserRequest;
+import com.hnhegui.hc.controller.user.response.UserExportResponse;
 import com.hnhegui.hc.controller.user.response.UserResponse;
 import com.hnhegui.hc.entity.user.User;
 import org.mapstruct.Mapper;
@@ -62,4 +63,9 @@ public interface UserConverter {
      * Entity Page to BO Page
      */
     Page<UserBO> entityPageToBoPage(Page<User> userIPage);
+
+    /**
+     * Entity List to Export Response List
+     */
+    List<UserExportResponse> toExportResponseList(List<UserBO> userBOS);
 }

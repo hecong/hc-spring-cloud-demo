@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -29,6 +30,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final TransactionTemplate transactionTemplate;
+    private final BCryptPasswordEncoder passwordEncoder;
 
 
     // ====================== 查询 ======================
@@ -73,6 +75,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @CachePut(value = "user#1h", key = "#result.id")
     public UserBO saveUser(UserCreateBO userCreateBO) {
         User user = UserConverter.INSTANCE.createBoToEntity(userCreateBO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
         return UserConverter.INSTANCE.entityToBo(user);
     }
@@ -88,6 +91,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     public UserBO updateUser(Long id, UserCreateBO userCreateBO) {
         User user = UserConverter.INSTANCE.createBoToEntity(userCreateBO);
         user.setId(id);
+        // 传入新密码时加密后更新，未传入密码时保留原密码
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword(null);
+        }
         userMapper.updateById(user);
         return UserConverter.INSTANCE.entityToBo(user);
     }
@@ -101,12 +110,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     public boolean deleteUser(Long id) {
         // 同时删除用户角色，保证数据一致
         return Boolean.TRUE.equals(transactionTemplate.execute(status -> {
-            int delete = userRoleMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, id));
-            if (delete > 0) {
-                int i = userMapper.deleteById(id);
-                return i > 0;
-            }
-            return false;
+            userRoleMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, id));
+            int i = userMapper.deleteById(id);
+            return i > 0;
         }));
     }
 

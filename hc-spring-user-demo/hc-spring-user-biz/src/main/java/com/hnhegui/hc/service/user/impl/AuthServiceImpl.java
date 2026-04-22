@@ -9,6 +9,7 @@ import com.hnhegui.hc.controller.user.converter.UserConverter;
 import com.hnhegui.hc.service.user.AuthService;
 import com.hnhegui.hc.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -26,16 +27,23 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
     private final SaTokenHelper saTokenHelper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(UserService userService, SaTokenHelper saTokenHelper) {
+    public AuthServiceImpl(UserService userService, SaTokenHelper saTokenHelper, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.saTokenHelper = saTokenHelper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public Map<String, Object> login(String username, String password) {
         UserBO userBO = userService.getUserByUsername(username);
         if (userBO == null) {
+            return null;
+        }
+
+        // 校验密码
+        if (!passwordEncoder.matches(password, userBO.getPassword())) {
             return null;
         }
 

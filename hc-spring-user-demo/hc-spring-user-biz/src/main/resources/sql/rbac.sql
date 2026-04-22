@@ -1,94 +1,109 @@
--- 用户表
-CREATE TABLE `sys_user` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `username` VARCHAR(50) NOT NULL COMMENT '用户名',
-  `password` VARCHAR(100) NOT NULL COMMENT '密码',
-  `name` VARCHAR(50) NOT NULL COMMENT '姓名',
-  `email` VARCHAR(100) COMMENT '邮箱',
-  `phone` VARCHAR(20) COMMENT '手机号',
-  `status` TINYINT(1) DEFAULT 1 COMMENT '状态：1-启用，0-禁用',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+create table if not exists user.sys_permission
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    name        varchar(50)                        not null comment '权限名称',
+    code        varchar(50)                        not null comment '权限编码',
+    type        varchar(20)                        not null comment '权限类型：menu-菜单，button-按钮',
+    path        varchar(200)                       null comment '访问路径',
+    parent_id   bigint   default 0                 null comment '父权限ID',
+    create_time datetime default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint uk_code
+        unique (code)
+)
+    comment '权限表' charset = utf8mb4;
 
--- 角色表
-CREATE TABLE `sys_role` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` VARCHAR(50) NOT NULL COMMENT '角色名称',
-  `code` VARCHAR(50) NOT NULL COMMENT '角色编码',
-  `description` VARCHAR(200) COMMENT '角色描述',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
+create table if not exists user.sys_role
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    name        varchar(50)                        not null comment '角色名称',
+    code        varchar(50)                        not null comment '角色编码',
+    description varchar(200)                       null comment '角色描述',
+    create_time datetime default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint uk_code
+        unique (code)
+)
+    comment '角色表' charset = utf8mb4;
 
--- 权限表
-CREATE TABLE `sys_permission` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` VARCHAR(50) NOT NULL COMMENT '权限名称',
-  `code` VARCHAR(50) NOT NULL COMMENT '权限编码',
-  `type` VARCHAR(20) NOT NULL COMMENT '权限类型：menu-菜单，button-按钮',
-  `path` VARCHAR(200) COMMENT '访问路径',
-  `parent_id` BIGINT(20) DEFAULT 0 COMMENT '父权限ID',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='权限表';
+create table if not exists user.sys_role_permission
+(
+    id            bigint auto_increment comment '主键'
+        primary key,
+    role_id       bigint not null comment '角色ID',
+    permission_id bigint not null comment '权限ID',
+    constraint uk_role_permission
+        unique (role_id, permission_id),
+    constraint sys_role_permission_ibfk_1
+        foreign key (role_id) references user.sys_role (id)
+            on delete cascade,
+    constraint sys_role_permission_ibfk_2
+        foreign key (permission_id) references user.sys_permission (id)
+            on delete cascade
+)
+    comment '角色权限关联表' charset = utf8mb4;
 
--- 用户角色关联表
-CREATE TABLE `sys_user_role` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `user_id` BIGINT(20) NOT NULL COMMENT '用户ID',
-  `role_id` BIGINT(20) NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_user_role` (`user_id`,`role_id`),
-  FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
+create index permission_id
+    on user.sys_role_permission (permission_id);
 
--- 角色权限关联表
-CREATE TABLE `sys_role_permission` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `role_id` BIGINT(20) NOT NULL COMMENT '角色ID',
-  `permission_id` BIGINT(20) NOT NULL COMMENT '权限ID',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_role_permission` (`role_id`,`permission_id`),
-  FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`permission_id`) REFERENCES `sys_permission` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关联表';
+create table if not exists user.sys_user
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    username    varchar(50)                          not null comment '用户名',
+    password    varchar(100)                         not null comment '密码',
+    name        varchar(50)                          not null comment '姓名',
+    email       varchar(100)                         null comment '邮箱',
+    phone       varchar(20)                          null comment '手机号',
+    status      tinyint(1) default 1                 null comment '状态：1-启用，0-禁用',
+    create_time datetime   default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time datetime   default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    creator     varchar(50)                          null comment '创建人id',
+    updater     varchar(50)                          null comment '更新人id',
+    deleted     tinyint    default 0                 null comment '逻辑删除标志（0-未删除，1-已删除)',
+    constraint uk_username
+        unique (username)
+)
+    comment '用户表' charset = utf8mb4;
 
--- 初始化数据
--- 插入默认角色
-INSERT INTO `sys_role` (`name`, `code`, `description`) VALUES
-('超级管理员', 'admin', '拥有系统所有权限'),
-('普通用户', 'user', '拥有基本操作权限');
+create table if not exists user.sys_user_role
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    user_id     bigint                              not null comment '用户ID',
+    role_id     bigint                              not null comment '角色ID',
+    creator     varchar(64)                         null,
+    create_time datetime  default CURRENT_TIMESTAMP null,
+    updater     varchar(64)                         null,
+    update_time timestamp default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
+    deleted     tinyint   default 0                 null,
+    constraint uk_user_role
+        unique (user_id, role_id),
+    constraint sys_user_role_ibfk_1
+        foreign key (user_id) references user.sys_user (id)
+            on delete cascade,
+    constraint sys_user_role_ibfk_2
+        foreign key (role_id) references user.sys_role (id)
+            on delete cascade
+)
+    comment '用户角色关联表' charset = utf8mb4;
 
--- 插入默认权限
-INSERT INTO `sys_permission` (`name`, `code`, `type`, `path`, `parent_id`) VALUES
-('系统管理', 'sys:manage', 'menu', '/sys', 0),
-('用户管理', 'sys:user:manage', 'menu', '/sys/user', 1),
-('角色管理', 'sys:role:manage', 'menu', '/sys/role', 1),
-('权限管理', 'sys:permission:manage', 'menu', '/sys/permission', 1),
-('用户列表', 'sys:user:list', 'button', '/sys/user/list', 2),
-('用户添加', 'sys:user:add', 'button', '/sys/user/add', 2),
-('用户编辑', 'sys:user:edit', 'button', '/sys/user/edit', 2),
-('用户删除', 'sys:user:delete', 'button', '/sys/user/delete', 2);
+create index role_id
+    on user.sys_user_role (role_id);
 
--- 关联角色权限
-INSERT INTO `sys_role_permission` (`role_id`, `permission_id`) VALUES
-(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8),
-(2, 1), (2, 2), (2, 5);
+-- ============================================================
+-- 初始管理员账号，密码：Admin@123（BCrypt 哈希）
+-- 注意：以下 BCrypt 哈希值为示例，首次部署时建议通过应用接口创建用户以确保哈希正确
+-- ============================================================
+INSERT INTO user.sys_user (username, password, name, status)
+VALUES ('admin', '$2a$10$EqKcp1WFKVN0kPMJgE0y3Oe7wYvI6gRQ0m0X5FLhQGqJ3vBmWfDHe', '管理员', 1)
+ON DUPLICATE KEY UPDATE password = VALUES(password);
 
--- 插入默认管理员用户
-INSERT INTO `sys_user` (`username`, `password`, `name`, `email`, `phone`, `status`) VALUES
-('admin', '123456', '管理员', 'admin@example.com', '13800138000', 1),
-('user', '123456', '普通用户', 'user@example.com', '13900139000', 1);
-
--- 关联用户角色
-INSERT INTO `sys_user_role` (`user_id`, `role_id`) VALUES
-(1, 1),
-(2, 2);
+-- ============================================================
+-- 存量数据迁移：将现有明文密码转为 BCrypt 哈希
+-- 注意：此脚本需要根据实际存量用户的明文密码逐条替换
+-- 若无法获取原始明文密码，建议要求用户首次登录时强制重置密码
+-- ============================================================
+-- 示例：UPDATE user.sys_user SET password = '$2a$10$...' WHERE username = 'existing_user';
