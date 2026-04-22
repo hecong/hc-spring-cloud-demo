@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.enterprise.EnterpriseUserMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO biz_enterprise_user (enterprise_id, username, password, name, phone, email,
+            status, password_error_count, lock_time, is_first_login, activation_expire_time,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.enterpriseId}, #{item.username}, #{item.password}, #{item.name},
+             #{item.phone}, #{item.email}, #{item.status}, #{item.passwordErrorCount},
+             #{item.lockTime}, #{item.isFirstLogin}, #{item.activationExpireTime},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO biz_enterprise_user (enterprise_id, username, password, name, phone, email,
+            status, password_error_count, lock_time, is_first_login, activation_expire_time,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.enterpriseId}, #{item.username}, #{item.password}, #{item.name},
+             #{item.phone}, #{item.email}, #{item.status}, #{item.passwordErrorCount},
+             #{item.lockTime}, #{item.isFirstLogin}, #{item.activationExpireTime},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            phone = VALUES(phone),
+            email = VALUES(email),
+            status = VALUES(status),
+            password_error_count = VALUES(password_error_count),
+            lock_time = VALUES(lock_time),
+            is_first_login = VALUES(is_first_login),
+            activation_expire_time = VALUES(activation_expire_time),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>

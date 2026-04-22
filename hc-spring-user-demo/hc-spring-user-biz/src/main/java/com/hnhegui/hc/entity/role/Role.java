@@ -22,4 +22,9 @@ public class Role extends BaseEntity {
      * 描述
      */
     private String description;
+
+    /**
+     * 企业ID，NULL表示平台角色
+     */
+    private Long enterpriseId;
 }

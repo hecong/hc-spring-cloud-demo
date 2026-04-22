@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.verify.AccountLockMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO sys_account_lock (user_type, user_id, account, lock_reason, unlock_time, status,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.userType}, #{item.userId}, #{item.account}, #{item.lockReason},
+             #{item.unlockTime}, #{item.status},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+</mapper>

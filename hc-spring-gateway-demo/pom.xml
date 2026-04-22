@@ -29,6 +29,16 @@
             <groupId>com.hnhegui.framework</groupId>
             <artifactId>hc-satoken-gateway-spring-boot-starter</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.hnhegui.framework</groupId>
+            <artifactId>hc-common-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- hc-redis-spring-boot-starter（optional 避免传递 Servlet/AOP 依赖） -->
+        <dependency>
+            <groupId>com.hnhegui.framework</groupId>
+            <artifactId>hc-redis-spring-boot-starter</artifactId>
+        </dependency>
         
         <!-- Lombok -->
         <dependency>

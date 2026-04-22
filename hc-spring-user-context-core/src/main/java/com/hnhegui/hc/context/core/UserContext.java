@@ -82,6 +82,21 @@ public class UserContext implements Serializable {
     private String clientIp;
 
     /**
+     * 用户类型：C-C端，B-B端，P-平台
+     */
+    private String userType;
+
+    /**
+     * 企业ID（B端用户专属）
+     */
+    private Long enterpriseId;
+
+    /**
+     * 企业编码（B端用户专属）
+     */
+    private String enterpriseCode;
+
+    /**
      * 判断用户是否已登录
      */
     @JsonIgnore

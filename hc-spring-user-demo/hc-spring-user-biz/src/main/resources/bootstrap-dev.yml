@@ -26,3 +26,7 @@ spring:
   config:
     import:
       - nacos:${spring.cloud.nacos.config.server-addr}?namespace=${spring.cloud.nacos.config.namespace}&group=${spring.cloud.nacos.config.group}
+hc:
+  satoken:
+    frontend:
+      cors-allowed-origins: "http://localhost,http://127.0.0.1,https://app.apifox.com"
