@@ -29,4 +29,4 @@ spring:
 hc:
   satoken:
     frontend:
-      cors-allowed-origins: "http://localhost,http://127.0.0.1,https://app.apifox.com"
+      cors-allowed-origins: "http://localhost:3000,http://127.0.0.1,https://app.apifox.com"

@@ -164,7 +164,7 @@ public class AuthController {
     /**
      * 获取当前用户信息
      */
-    @PostMapping("/info")
+    @GetMapping("/info")
     public Result<CurrentUserInfoResponse> getInfo() {
         CurrentUserInfoBO bo = authService.getCurrentUserInfo();
         return Result.success(AuthConverter.INSTANCE.toCurrentUserInfoResponse(bo));

@@ -106,7 +106,9 @@ public class RsaUtils {
 
 
     public static void main(String[] args) {
-        String encrypt = encrypt("HEcong2461@", "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApsips1m8c2kvXTyik+5E3q8Fps++vDcuN4h3XJHDQvijgiYzHhYl9sHNwhHarkFgd7CEbWYKjcxgc6kNhmsvk9k7vULUxEbHGcokUXbHsUFtZcwAliZSs4/KsQFOEKfK53TU4ax569+aqAJ2SkQ4OYhwQgOhL3ckZVMEobWdDwCsSfOUCqxad1T/g/acF9URtaezEAYbJ+nNEnriW970F2jwND57lpzHn2cXXolXzWQgYefY6nkQa1m+G3oQqSmt9FV+n3eB3cp+RhNObzV7mqnXmlfF17F1SAugR0c3VoCV/2huTGbzz7dgcn+u8Nbe40zlGOYSpQoDKpUhNPLoZQIDAQAB");
+        String encrypt = encrypt("Admin@123", "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAx2iV+O1wd86J3yC4ShHkVO6wMvgZChrzFrGZ4fg9h0FINIohxENKqt1ClWIchAUZUeYU9VaAOb+QvIBESwBQN4rmzx3ZDMGh3I6tRfmjKkEEf0CWfi18gzjqTCVmFX7rg3mxhUiMxVwBWqfevnHrCG4QlFeONI3+ZrbfOOzbW4mo7cAwnk7n8AqS0XiVBpfk7lZhe+1t4Ui6A2qxIaRL9zxeBECq7X8ldmCY0/J3O16IBOPjBZRGs8Lb0IZKD02x0QrodInIHlaQ3LnIfm6VG2KbzDiwoCCqr6bRcXoOwdoyulH6CFPYlvR6lhNYhKKuwNA46fJnPlUsQsjdooaB2QIDAQAB");
         System.out.println(encrypt);
+        String text = decrypt(encrypt,"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAx2iV+O1wd86J3yC4ShHkVO6wMvgZChrzFrGZ4fg9h0FINIohxENKqt1ClWIchAUZUeYU9VaAOb+QvIBESwBQN4rmzx3ZDMGh3I6tRfmjKkEEf0CWfi18gzjqTCVmFX7rg3mxhUiMxVwBWqfevnHrCG4QlFeONI3+ZrbfOOzbW4mo7cAwnk7n8AqS0XiVBpfk7lZhe+1t4Ui6A2qxIaRL9zxeBECq7X8ldmCY0/J3O16IBOPjBZRGs8Lb0IZKD02x0QrodInIHlaQ3LnIfm6VG2KbzDiwoCCqr6bRcXoOwdoyulH6CFPYlvR6lhNYhKKuwNA46fJnPlUsQsjdooaB2QIDAQAB");
+        System.out.println(text);
     }
 }

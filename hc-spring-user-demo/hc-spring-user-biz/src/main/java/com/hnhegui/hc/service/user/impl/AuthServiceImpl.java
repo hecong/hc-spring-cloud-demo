@@ -447,7 +447,6 @@ public class AuthServiceImpl implements AuthService {
         // 2. 查询平台用户
         UserBO userBO = userService.getUserByUsername(username);
         if (userBO == null) {
-            loginLogService.recordLoginLog(UserTypeEnum.P.getCode(), null, username, loginIp, device, false, "账号不存在");
             throw new BusinessException("用户名或密码错误");
         }
 
