@@ -10,7 +10,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -80,7 +79,7 @@ public class AccountLockService {
      */
     public boolean isAccountLocked(String userType, String account) {
         String key = "auth:lock:" + userType + ":" + account;
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+        return redisTemplate.hasKey(key);
     }
 
     /**
@@ -93,7 +92,7 @@ public class AccountLockService {
     public long getAccountLockRemainingTime(String userType, String account) {
         String key = "auth:lock:" + userType + ":" + account;
         Long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
-        return ttl != null && ttl > 0 ? ttl : 0;
+        return ttl > 0 ? ttl : 0;
     }
 
     /**
