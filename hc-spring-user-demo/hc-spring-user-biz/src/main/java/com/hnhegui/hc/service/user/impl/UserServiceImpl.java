@@ -1,6 +1,5 @@
 package com.hnhegui.hc.service.user.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hc.framework.mybatis.service.BaseServiceImpl;
 import com.hnhegui.hc.bo.user.UserBO;
@@ -8,7 +7,6 @@ import com.hnhegui.hc.bo.user.UserCreateBO;
 import com.hnhegui.hc.bo.user.UserPageQueryBO;
 import com.hnhegui.hc.controller.user.converter.UserConverter;
 import com.hnhegui.hc.entity.user.User;
-import com.hnhegui.hc.entity.user.UserRole;
 import com.hnhegui.hc.mapper.user.UserMapper;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
 import com.hnhegui.hc.service.user.UserService;
@@ -36,7 +34,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     // ====================== 查询 ======================
     @Override
     public UserBO getUserByUsername(String username) {
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        User user = userMapper.selectByUsername(username);
         return UserConverter.INSTANCE.entityToBo(user);
     }
 
@@ -61,8 +59,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
     @Override
     public List<UserBO> getUsersByRoleId(Long roleId) {
-        List<Long> userIds = userRoleMapper.selectList(new LambdaQueryWrapper<UserRole>().eq(UserRole::getRoleId, roleId))
-            .stream().map(UserRole::getUserId).toList();
+        List<Long> userIds = userRoleMapper.selectUserIdsByRoleId(roleId);
         if (userIds.isEmpty()) {
             return List.of();
         }
@@ -110,7 +107,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     public boolean deleteUser(Long id) {
         // 同时删除用户角色，保证数据一致
         return Boolean.TRUE.equals(transactionTemplate.execute(status -> {
-            userRoleMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, id));
+            userRoleMapper.deleteByUserId(id);
             int i = userMapper.deleteById(id);
             return i > 0;
         }));

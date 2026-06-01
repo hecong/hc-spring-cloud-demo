@@ -1,6 +1,5 @@
 package com.hnhegui.hc.service.user.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hnhegui.hc.entity.user.UserRole;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
@@ -42,7 +41,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         }).toList();
         transactionTemplate.execute(status -> {
             // 先删除旧角色
-            this.baseMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId));
+            this.baseMapper.deleteByUserId(userId);
             // 批量插入新角色
             return saveBatch(userRoles);
         });

@@ -1,14 +1,11 @@
 package com.hnhegui.hc.service.permission.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hc.framework.common.model.DynamicAuthRoute;
 import com.hc.framework.mybatis.service.BaseServiceImpl;
 import com.hc.framework.redis.util.RedisCacheUtils;
 import com.hnhegui.hc.common.constant.CommonCacheConstants;
 import com.hnhegui.hc.controller.permission.converter.PermissionConverter;
 import com.hnhegui.hc.entity.permission.Permission;
-import com.hnhegui.hc.entity.role.RolePermission;
-import com.hnhegui.hc.entity.user.UserRole;
 import com.hnhegui.hc.controller.permission.request.PermissionRequest;
 import com.hnhegui.hc.controller.permission.response.PermissionResponse;
 import com.hnhegui.hc.mapper.permission.PermissionMapper;
@@ -36,8 +33,7 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
 
     @Override
     public List<PermissionResponse> getPermissionsByRoleId(Long roleId) {
-        List<Long> permissionIds = rolePermissionMapper.selectList(new LambdaQueryWrapper<RolePermission>().eq(RolePermission::getRoleId, roleId))
-            .stream().map(RolePermission::getPermissionId).toList();
+        List<Long> permissionIds = rolePermissionMapper.selectPermissionIdsByRoleId(roleId);
         if (permissionIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -47,13 +43,12 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
 
     @Override
     public List<PermissionResponse> getPermissionsByUserId(Long userId) {
-        List<Long> roleIds = userRoleMapper.selectList(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId))
-            .stream().map(UserRole::getRoleId).toList();
+        List<Long> roleIds = userRoleMapper.selectRoleIdsByUserId(userId);
         if (roleIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Long> permissionIds = rolePermissionMapper.selectList(new LambdaQueryWrapper<RolePermission>().in(RolePermission::getRoleId, roleIds))
-            .stream().map(RolePermission::getPermissionId).collect(Collectors.toSet()).stream().toList();
+        List<Long> permissionIds = rolePermissionMapper.selectPermissionIdsByRoleIds(roleIds)
+            .stream().collect(Collectors.toSet()).stream().toList();
         if (permissionIds.isEmpty()) {
             return Collections.emptyList();
         }

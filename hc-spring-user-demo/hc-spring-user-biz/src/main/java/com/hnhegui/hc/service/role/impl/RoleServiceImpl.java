@@ -1,12 +1,10 @@
 package com.hnhegui.hc.service.role.impl;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hc.framework.mybatis.service.BaseServiceImpl;
 import com.hnhegui.hc.controller.role.converter.RoleConverter;
 import com.hnhegui.hc.entity.role.Role;
 import com.hnhegui.hc.entity.role.RolePermission;
-import com.hnhegui.hc.entity.user.UserRole;
 import com.hnhegui.hc.controller.role.request.RoleRequest;
 import com.hnhegui.hc.controller.role.response.RoleResponse;
 import com.hnhegui.hc.mapper.role.RoleMapper;
@@ -30,8 +28,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
 
     @Override
     public List<RoleResponse> getRolesByUserId(Long userId) {
-        List<Long> roleIds = userRoleMapper.selectList(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId))
-            .stream().map(UserRole::getRoleId).toList();
+        List<Long> roleIds = userRoleMapper.selectRoleIdsByUserId(userId);
         if (roleIds.isEmpty()) {
             return List.of();
         }

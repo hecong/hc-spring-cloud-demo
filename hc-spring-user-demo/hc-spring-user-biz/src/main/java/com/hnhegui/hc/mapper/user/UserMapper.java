@@ -48,4 +48,15 @@ public interface UserMapper extends BaseMapper<User> {
             .eq(StrUtil.isNotBlank(queryBO.getName()), User::getName, queryBO.getName());
         return this.selectPage(queryBO.toPage(), wrapper);
     }
+
+    /**
+     * 根据用户名查询用户
+     *
+     * @param username 用户名
+     * @return 用户实体
+     */
+    default User selectByUsername(String username) {
+        return this.selectOne(Wrappers.<User>lambdaQuery()
+            .eq(User::getUsername, username));
+    }
 }

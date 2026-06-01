@@ -17,11 +17,11 @@ import java.util.List;
 public class OrderAddressServiceImpl extends BaseServiceImpl<OrderAddressMapper, OrderAddress> implements OrderAddressService {
     @Override
     public int insertBatch(List<OrderAddress> list) {
-        return 0;
+        return baseMapper.insertBatch(list);
     }
 
     @Override
     public int insertOrUpdateBatch(List<OrderAddress> list) {
-        return 0;
+        return baseMapper.insertOrUpdateBatch(list);
     }
 }

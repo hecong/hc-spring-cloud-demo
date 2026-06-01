@@ -53,11 +53,11 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, Order> implem
 
     @Override
     public int insertBatch(List<Order> list) {
-        return 0;
+        return baseMapper.insertBatch(list);
     }
 
     @Override
     public int insertOrUpdateBatch(List<Order> list) {
-        return 0;
+        return baseMapper.insertOrUpdateBatch(list);
     }
 }
