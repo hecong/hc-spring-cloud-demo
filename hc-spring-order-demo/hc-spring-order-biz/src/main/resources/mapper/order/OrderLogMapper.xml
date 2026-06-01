@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.order.OrderLogMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO order_log (order_no, operate_type, operate_desc,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.operateType}, #{item.operateDesc},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO order_log (order_no, operate_type, operate_desc,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.operateType}, #{item.operateDesc},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            operate_type = VALUES(operate_type),
+            operate_desc = VALUES(operate_desc),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>

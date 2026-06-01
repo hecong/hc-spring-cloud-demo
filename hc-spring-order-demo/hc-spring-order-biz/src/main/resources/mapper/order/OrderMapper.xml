@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.order.OrderMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO order_info (order_no, user_id, order_status, total_amount, pay_amount,
+            discount_amount, pay_type, pay_time, delivery_time, finish_time, cancel_time, remark,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.userId}, #{item.orderStatus}, #{item.totalAmount},
+             #{item.payAmount}, #{item.discountAmount}, #{item.payType}, #{item.payTime},
+             #{item.deliveryTime}, #{item.finishTime}, #{item.cancelTime}, #{item.remark},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO order_info (order_no, user_id, order_status, total_amount, pay_amount,
+            discount_amount, pay_type, pay_time, delivery_time, finish_time, cancel_time, remark,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.userId}, #{item.orderStatus}, #{item.totalAmount},
+             #{item.payAmount}, #{item.discountAmount}, #{item.payType}, #{item.payTime},
+             #{item.deliveryTime}, #{item.finishTime}, #{item.cancelTime}, #{item.remark},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            order_status = VALUES(order_status),
+            total_amount = VALUES(total_amount),
+            pay_amount = VALUES(pay_amount),
+            discount_amount = VALUES(discount_amount),
+            pay_type = VALUES(pay_type),
+            pay_time = VALUES(pay_time),
+            delivery_time = VALUES(delivery_time),
+            finish_time = VALUES(finish_time),
+            cancel_time = VALUES(cancel_time),
+            remark = VALUES(remark),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>

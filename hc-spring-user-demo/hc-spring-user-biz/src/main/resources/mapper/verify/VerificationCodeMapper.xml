@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.verify.VerificationCodeMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO sys_verification_code (target, code, scene, status, request_ip, expire_time,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.target}, #{item.code}, #{item.scene}, #{item.status},
+             #{item.requestIp}, #{item.expireTime},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+</mapper>

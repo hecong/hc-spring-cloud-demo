@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.permission.PermissionMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO sys_permission (name, code, type, path, parent_id,
+                                    creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.name}, #{item.code}, #{item.type}, #{item.path}, #{item.parentId},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO sys_permission (name, code, type, path, parent_id,
+                                    creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.name}, #{item.code}, #{item.type}, #{item.path}, #{item.parentId},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            code = VALUES(code),
+            type = VALUES(type),
+            path = VALUES(path),
+            parent_id = VALUES(parent_id),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>

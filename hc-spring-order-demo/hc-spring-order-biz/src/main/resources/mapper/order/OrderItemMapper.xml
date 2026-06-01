@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.order.OrderItemMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO order_item (order_no, product_id, product_name, product_image,
+            price, quantity, total_price,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.productId}, #{item.productName}, #{item.productImage},
+             #{item.price}, #{item.quantity}, #{item.totalPrice},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO order_item (order_no, product_id, product_name, product_image,
+            price, quantity, total_price,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.productId}, #{item.productName}, #{item.productImage},
+             #{item.price}, #{item.quantity}, #{item.totalPrice},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            product_name = VALUES(product_name),
+            product_image = VALUES(product_image),
+            price = VALUES(price),
+            quantity = VALUES(quantity),
+            total_price = VALUES(total_price),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>

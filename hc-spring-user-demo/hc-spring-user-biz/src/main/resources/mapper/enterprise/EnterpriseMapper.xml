@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.enterprise.EnterpriseMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO biz_enterprise (enterprise_code, name, contact_person, contact_phone, contact_email,
+            address, status, valid_date, ip_whitelist, login_mutual_exclusion, password_rule,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.enterpriseCode}, #{item.name}, #{item.contactPerson}, #{item.contactPhone},
+             #{item.contactEmail}, #{item.address}, #{item.status}, #{item.validDate},
+             #{item.ipWhitelist}, #{item.loginMutualExclusion}, #{item.passwordRule},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO biz_enterprise (enterprise_code, name, contact_person, contact_phone, contact_email,
+            address, status, valid_date, ip_whitelist, login_mutual_exclusion, password_rule,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.enterpriseCode}, #{item.name}, #{item.contactPerson}, #{item.contactPhone},
+             #{item.contactEmail}, #{item.address}, #{item.status}, #{item.validDate},
+             #{item.ipWhitelist}, #{item.loginMutualExclusion}, #{item.passwordRule},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            contact_person = VALUES(contact_person),
+            contact_phone = VALUES(contact_phone),
+            contact_email = VALUES(contact_email),
+            address = VALUES(address),
+            status = VALUES(status),
+            valid_date = VALUES(valid_date),
+            ip_whitelist = VALUES(ip_whitelist),
+            login_mutual_exclusion = VALUES(login_mutual_exclusion),
+            password_rule = VALUES(password_rule),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.order.OrderAddressMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO order_address (order_no, receiver, phone, province, city, area, detail_address,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.receiver}, #{item.phone}, #{item.province},
+             #{item.city}, #{item.area}, #{item.detailAddress},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO order_address (order_no, receiver, phone, province, city, area, detail_address,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.receiver}, #{item.phone}, #{item.province},
+             #{item.city}, #{item.area}, #{item.detailAddress},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            receiver = VALUES(receiver),
+            phone = VALUES(phone),
+            province = VALUES(province),
+            city = VALUES(city),
+            area = VALUES(area),
+            detail_address = VALUES(detail_address),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>

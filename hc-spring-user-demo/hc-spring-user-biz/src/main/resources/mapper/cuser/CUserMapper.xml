@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hnhegui.hc.mapper.cuser.CUserMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO c_user (phone, email, username, password, nickname, avatar, gender, birthday,
+            status, password_error_count, lock_time, remember_login, identity_default,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.phone}, #{item.email}, #{item.username}, #{item.password},
+             #{item.nickname}, #{item.avatar}, #{item.gender}, #{item.birthday},
+             #{item.status}, #{item.passwordErrorCount}, #{item.lockTime},
+             #{item.rememberLogin}, #{item.identityDefault},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        INSERT INTO c_user (phone, email, username, password, nickname, avatar, gender, birthday,
+            status, password_error_count, lock_time, remember_login, identity_default,
+            creator, updater, create_time, update_time, deleted)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.phone}, #{item.email}, #{item.username}, #{item.password},
+             #{item.nickname}, #{item.avatar}, #{item.gender}, #{item.birthday},
+             #{item.status}, #{item.passwordErrorCount}, #{item.lockTime},
+             #{item.rememberLogin}, #{item.identityDefault},
+             #{item.creator}, #{item.updater}, NOW(), NOW(), 0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            phone = VALUES(phone),
+            email = VALUES(email),
+            nickname = VALUES(nickname),
+            avatar = VALUES(avatar),
+            gender = VALUES(gender),
+            birthday = VALUES(birthday),
+            status = VALUES(status),
+            password_error_count = VALUES(password_error_count),
+            lock_time = VALUES(lock_time),
+            updater = VALUES(updater),
+            update_time = NOW()
+    </insert>
+
+</mapper>
