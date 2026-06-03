@@ -20,6 +20,7 @@ import com.hnhegui.hc.controller.auth.response.CurrentUserInfoResponse;
 import com.hnhegui.hc.controller.auth.response.LoginResponse;
 import com.hnhegui.hc.config.RsaKeyConfig;
 import com.hnhegui.hc.service.user.AuthService;
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.hnhegui.hc.service.verify.VerificationCodeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -155,6 +156,7 @@ public class AuthController {
     /**
      * 登出
      */
+    @SaCheckLogin
     @PostMapping("/logout")
     public Result<Void> logout() {
         authService.logout();
@@ -164,6 +166,7 @@ public class AuthController {
     /**
      * 获取当前用户信息
      */
+    @SaCheckLogin
     @GetMapping("/info")
     public Result<CurrentUserInfoResponse> getInfo() {
         CurrentUserInfoBO bo = authService.getCurrentUserInfo();

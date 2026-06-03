@@ -32,9 +32,7 @@ public class EnterpriseUserService {
     private final PasswordService passwordService;
     private final AccountLockService accountLockService;
 
-    /**
-     * B端用户状态枚举引用（不再定义常量）
-     */
+
 
     /**
      * 激活有效期（天）

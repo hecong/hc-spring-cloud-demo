@@ -1,5 +1,6 @@
 package com.hnhegui.hc.controller.role;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.hc.framework.web.model.Result;
 import com.hnhegui.hc.controller.role.request.AssignPermissionsRequest;
 import com.hnhegui.hc.controller.role.request.RoleRequest;
@@ -27,6 +28,7 @@ public class RoleController {
      * 获取角色列表
      * @return 角色列表
      */
+    @SaCheckPermission("role:list")
     @GetMapping("/list")
     public Result<List<RoleResponse>> list() {
         List<RoleResponse> roles = roleService.listRoles();
@@ -38,6 +40,7 @@ public class RoleController {
      * @param roleRequest 角色信息
      * @return 添加后的角色信息
      */
+    @SaCheckPermission("role:add")
     @PostMapping("/add")
     public Result<RoleResponse> add(@RequestBody RoleRequest roleRequest) {
         RoleResponse roleResponse = roleService.saveRole(roleRequest);
@@ -50,6 +53,7 @@ public class RoleController {
      * @param roleRequest 角色信息
      * @return 编辑后的角色信息
      */
+    @SaCheckPermission("role:edit")
     @PutMapping("/edit/{id}")
     public Result<RoleResponse> edit(@PathVariable Long id, @RequestBody RoleRequest roleRequest) {
         RoleResponse roleResponse = roleService.updateRole(id, roleRequest);
@@ -61,6 +65,7 @@ public class RoleController {
      * @param id 角色ID
      * @return 删除结果
      */
+    @SaCheckPermission("role:delete")
     @DeleteMapping("/delete/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         boolean success = roleService.deleteRole(id);
@@ -76,6 +81,7 @@ public class RoleController {
      * @param id 角色ID
      * @return 角色详情
      */
+    @SaCheckPermission("role:list")
     @GetMapping("/get/{id}")
     public Result<RoleResponse> get(@PathVariable Long id) {
         RoleResponse roleResponse = roleService.getRoleById(id);
@@ -87,6 +93,7 @@ public class RoleController {
      * @param request 分配权限请求
      * @return 分配结果
      */
+    @SaCheckPermission("role:assign-permissions")
     @PostMapping("/assign-permissions")
     public Result<Void> assignPermissions(@RequestBody AssignPermissionsRequest request) {
         boolean success = roleService.assignPermissions(request.getRoleId(), request.getPermissionIds());

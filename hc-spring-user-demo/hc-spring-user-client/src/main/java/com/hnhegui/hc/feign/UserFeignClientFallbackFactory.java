@@ -34,6 +34,16 @@ public class UserFeignClientFallbackFactory implements FallbackFactory<UserFeign
                 return null;
             }
 
+            @Override
+            public List<String> getRoleCodesByUserId(Long userId) {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public List<String> getPermissionCodesByUserId(Long userId) {
+                return Collections.emptyList();
+            }
+
         };
     }
 }

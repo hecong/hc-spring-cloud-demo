@@ -1,7 +1,7 @@
 package com.hnhegui.hc.internal.user;
 
-import com.hnhegui.hc.feign.response.PermissionDTO;
-import com.hnhegui.hc.feign.response.RoleDTO;
+import com.hnhegui.hc.controller.permission.response.PermissionResponse;
+import com.hnhegui.hc.controller.role.response.RoleResponse;
 import com.hnhegui.hc.feign.response.UserDTO;
 import com.hnhegui.hc.feign.UserFeignClient;
 import com.hnhegui.hc.internal.user.converter.UserDTOConverter;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务内部接口实现 - 供 Feign 客户端调用
@@ -23,7 +24,8 @@ import java.util.List;
 public class UserFeignClientImpl implements UserFeignClient {
 
     private final UserService userService;
-
+    private final RoleService roleService;
+    private final PermissionService permissionService;
 
     @Override
     public List<UserDTO> listUsers() {
@@ -38,5 +40,19 @@ public class UserFeignClientImpl implements UserFeignClient {
     @Override
     public UserDTO getUserByUsername(@PathVariable("username") String username) {
         return UserDTOConverter.INSTANCE.convertToUserDTO(userService.getUserByUsername(username));
+    }
+
+    @Override
+    public List<String> getRoleCodesByUserId(@PathVariable("userId") Long userId) {
+        return roleService.getRolesByUserId(userId).stream()
+                .map(RoleResponse::getCode)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getPermissionCodesByUserId(@PathVariable("userId") Long userId) {
+        return permissionService.getPermissionsByUserId(userId).stream()
+                .map(PermissionResponse::getCode)
+                .collect(Collectors.toList());
     }
 }

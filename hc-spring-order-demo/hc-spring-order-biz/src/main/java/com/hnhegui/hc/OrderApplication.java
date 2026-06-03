@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 订单服务启动类
  */
 @SpringBootApplication
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"com.hnhegui.hc.feign"})
 @MapperScan("com.hnhegui.hc.mapper")
 public class OrderApplication {
 

@@ -47,4 +47,15 @@ public interface RolePermissionMapper extends BaseMapper<RolePermission> {
                 .in(RolePermission::getRoleId, roleIds))
             .stream().map(RolePermission::getPermissionId).toList();
     }
+
+    /**
+     * 根据权限ID物理删除关联
+     *
+     * @param permissionId 权限ID
+     * @return 影响行数
+     */
+    default int deleteByPermissionId(Long permissionId) {
+        return this.delete(Wrappers.<RolePermission>lambdaQuery()
+            .eq(RolePermission::getPermissionId, permissionId));
+    }
 }

@@ -3,6 +3,8 @@ package com.hnhegui.hc.controller.enterprise;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hc.framework.mybatis.model.PageData;
 import com.hc.framework.web.model.Result;
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.hnhegui.hc.bo.enterprise.EnterpriseBO;
 import com.hnhegui.hc.bo.enterprise.EnterpriseCreateBO;
 import com.hnhegui.hc.bo.enterprise.EnterpriseUserBO;
@@ -37,6 +39,7 @@ public class EnterpriseController {
     /**
      * 创建企业
      */
+    @SaCheckPermission("enterprise:add")
     @PostMapping("/add")
     public Result<EnterpriseResponse> createEnterprise(@Valid @RequestBody EnterpriseCreateRequest request) {
         EnterpriseCreateBO createBO = EnterpriseConverter.INSTANCE.createRequestToCreateBo(request);
@@ -47,6 +50,7 @@ public class EnterpriseController {
     /**
      * 获取企业信息
      */
+    @SaCheckPermission("enterprise:list")
     @GetMapping("/get/{id}")
     public Result<EnterpriseResponse> getEnterprise(@PathVariable Long id) {
         EnterpriseBO bo = enterpriseService.getEnterpriseById(id);
@@ -56,6 +60,7 @@ public class EnterpriseController {
     /**
      * 修改企业信息
      */
+    @SaCheckPermission("enterprise:edit")
     @PutMapping("/edit/{id}")
     public Result<EnterpriseResponse> updateEnterprise(@PathVariable Long id,
                                                        @Valid @RequestBody EnterpriseUpdateRequest request) {
@@ -67,6 +72,7 @@ public class EnterpriseController {
     /**
      * 更新安全设置
      */
+    @SaCheckPermission("enterprise:edit")
     @PutMapping("/security/{id}")
     public Result<Void> updateSecuritySettings(@PathVariable Long id,
                                                @Valid @RequestBody SecuritySettingRequest request) {
@@ -78,6 +84,7 @@ public class EnterpriseController {
     /**
      * 创建企业用户
      */
+    @SaCheckPermission("enterprise:user:add")
     @PostMapping("/user/add")
     public Result<EnterpriseUserResponse> createEnterpriseUser(@Valid @RequestBody EnterpriseUserCreateRequest request) {
         EnterpriseUserCreateBO createBO = EnterpriseConverter.INSTANCE.userCreateRequestToCreateBo(request);
@@ -88,6 +95,7 @@ public class EnterpriseController {
     /**
      * 编辑企业用户
      */
+    @SaCheckPermission("enterprise:user:edit")
     @PutMapping("/user/edit/{id}")
     public Result<EnterpriseUserResponse> updateEnterpriseUser(@PathVariable Long id,
                                                                @Valid @RequestBody EnterpriseUserCreateRequest request) {
@@ -99,6 +107,7 @@ public class EnterpriseController {
     /**
      * 软删除企业用户（已离职）
      */
+    @SaCheckPermission("enterprise:user:delete")
     @DeleteMapping("/user/delete/{id}")
     public Result<Void> softDeleteEnterpriseUser(@PathVariable Long id) {
         enterpriseUserService.softDelete(id);
@@ -108,6 +117,7 @@ public class EnterpriseController {
     /**
      * 重置下属密码
      */
+    @SaCheckPermission("enterprise:user:edit")
     @PutMapping("/user/{id}/reset-password")
     public Result<Void> resetPassword(@PathVariable Long id,
                                       @Valid @RequestBody ResetEnterpriseUserPasswordRequest request) {
@@ -118,6 +128,7 @@ public class EnterpriseController {
     /**
      * 激活账号
      */
+    @SaCheckPermission("enterprise:user:edit")
     @PostMapping("/user/{id}/activate")
     public Result<Void> activateUser(@PathVariable Long id) {
         enterpriseUserService.activateUser(id);
@@ -127,6 +138,7 @@ public class EnterpriseController {
     /**
      * 修改用户状态
      */
+    @SaCheckPermission("enterprise:user:edit")
     @PutMapping("/user/{id}/status")
     public Result<Void> updateUserStatus(@PathVariable Long id, @RequestBody Map<String, Integer> params) {
         Integer status = params.get("status");
@@ -137,6 +149,7 @@ public class EnterpriseController {
     /**
      * 企业用户分页列表
      */
+    @SaCheckPermission("enterprise:list")
     @GetMapping("/user/page")
     public Result<PageData<EnterpriseUserResponse>> listEnterpriseUsers(EnterpriseUserPageRequest request) {
         EnterpriseUserPageQueryBO queryBO = EnterpriseConverter.INSTANCE.userPageRequestToPageBo(request);
@@ -148,6 +161,7 @@ public class EnterpriseController {
     /**
      * B端用户首次登录强制修改密码
      */
+    @SaCheckLogin
     @PutMapping("/user/force-change-password")
     public Result<Void> forceChangePassword(@Valid @RequestBody ResetEnterpriseUserPasswordRequest request) {
         Long userId = UserContextHolder.getUserId();
@@ -158,6 +172,7 @@ public class EnterpriseController {
     /**
      * B端用户修改密码
      */
+    @SaCheckLogin
     @PutMapping("/user/change-password")
     public Result<Void> changePassword(@Valid @RequestBody com.hnhegui.hc.controller.cuser.request.ChangePasswordRequest request) {
         Long userId = UserContextHolder.getUserId();

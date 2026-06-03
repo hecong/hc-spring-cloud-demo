@@ -3,6 +3,7 @@ package com.hnhegui.hc.service.user.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hnhegui.hc.entity.user.UserRole;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
+import com.hnhegui.hc.service.auth.PermissionCacheRefreshService;
 import com.hnhegui.hc.service.user.UserRoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import java.util.List;
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements UserRoleService {
 
     private final TransactionTemplate transactionTemplate;
+    private final PermissionCacheRefreshService permissionCacheRefreshService;
 
 
     // ====================== 分配角色 ======================
@@ -45,6 +47,8 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
             // 批量插入新角色
             return saveBatch(userRoles);
         });
+        // 刷新权限缓存 + 更新 Sa-Token Session
+        permissionCacheRefreshService.refreshUser(userId);
         return !userRoles.isEmpty();
     }
 }

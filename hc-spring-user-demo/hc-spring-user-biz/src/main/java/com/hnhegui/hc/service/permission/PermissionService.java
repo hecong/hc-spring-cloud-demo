@@ -64,9 +64,4 @@ public interface PermissionService extends BaseService<Permission> {
      * @return 权限响应参数列表
      */
     List<PermissionResponse> listPermissions();
-
-    /**
-     * 初始化动态鉴权路由缓存
-     */
-    void initDynamicAuthRouteCache();
 }

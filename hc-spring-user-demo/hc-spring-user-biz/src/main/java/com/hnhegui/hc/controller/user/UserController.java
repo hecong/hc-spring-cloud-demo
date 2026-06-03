@@ -1,5 +1,6 @@
 package com.hnhegui.hc.controller.user;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hc.framework.excel.model.ExcelExportRequest;
 import com.hc.framework.excel.model.ExcelTaskStatus;
@@ -49,6 +50,7 @@ public class UserController {
     /**
      * 获取用户列表
      */
+    @SaCheckPermission("user:list")
     @GetMapping("/list")
     public Result<List<UserResponse>> list() {
         List<UserResponse> users = UserConverter.INSTANCE.toResponseList(userService.listUsers());
@@ -58,6 +60,7 @@ public class UserController {
     /**
      * 添加用户
      */
+    @SaCheckPermission("user:add")
     @PostMapping("/add")
     public Result<UserResponse> add(@RequestBody UserRequest userRequest) {
         UserResponse userResponse = UserConverter.INSTANCE.toResponse(userService.saveUser(UserConverter.INSTANCE.requestToCreateBo(userRequest)));
@@ -67,6 +70,7 @@ public class UserController {
     /**
      * 编辑用户
      */
+    @SaCheckPermission("user:edit")
     @PutMapping("/edit/{id}")
     public Result<UserResponse> edit(@PathVariable Long id, @RequestBody UserRequest userRequest) {
         UserResponse userResponse = UserConverter.INSTANCE.toResponse(userService.updateUser(id, UserConverter.INSTANCE.requestToCreateBo(userRequest)));
@@ -76,6 +80,7 @@ public class UserController {
     /**
      * 删除用户
      */
+    @SaCheckPermission("user:delete")
     @DeleteMapping("/delete/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         boolean success = userService.deleteUser(id);
@@ -89,6 +94,7 @@ public class UserController {
     /**
      * 根据id获取用户
      */
+    @SaCheckPermission("user:list")
     @GetMapping("/get/{id}")
     public Result<UserResponse> get(@PathVariable Long id) {
         UserResponse userResponse = UserConverter.INSTANCE.toResponse(userService.getUserById(id));
@@ -98,6 +104,7 @@ public class UserController {
     /**
      * 分配角色
      */
+    @SaCheckPermission("user:assign-roles")
     @PostMapping("/assign-roles")
     public Result<Void> assignRoles(@RequestBody AssignRolesRequest request) {
         boolean success = userRoleService.assignRoles(request.getUserId(), request.getRoleIds());
@@ -111,6 +118,7 @@ public class UserController {
     /**
      * 分页查询
      */
+    @SaCheckPermission("user:list")
     @GetMapping("/page")
     public Result<PageData<UserResponse>> page(@Validated UserPageRequest request) {
         Page<UserResponse> userResponsePage = UserConverter.INSTANCE.toResponsePage(userService.listUsersByPage(UserConverter.INSTANCE.requestToPageBo(request)));
@@ -121,6 +129,7 @@ public class UserController {
     /**
      * 同步导出用户列表
      */
+    @SaCheckPermission("user:export")
     @GetMapping("/export")
     public void export(HttpServletResponse response) throws IOException {
         ExcelExportRequest req = ExcelExportRequest.builder()
@@ -139,6 +148,7 @@ public class UserController {
     /**
      * 异步导出用户列表 - 创建导出任务（带进度回调）
      */
+    @SaCheckPermission("user:export")
     @PostMapping("/export-async")
     public Result<String> exportAsync() {
         ExcelExportRequest req = ExcelExportRequest.builder()
@@ -155,9 +165,7 @@ public class UserController {
                 return UserConverter.INSTANCE.toExportResponseList(userBOS);
             },
             UserExportResponse.class,
-            taskStatus -> {
-                System.out.println("[" + taskStatus.getTaskId() + "] 导出进度: " + taskStatus.getProgress() + " 条数据");
-            }
+            taskStatus -> System.out.println("[" + taskStatus.getTaskId() + "] 导出进度: " + taskStatus.getProgress() + " 条数据")
         );
 
         return Result.success(taskId);
@@ -166,6 +174,7 @@ public class UserController {
     /**
      * 查询异步导出任务状态
      */
+    @SaCheckPermission("user:export")
     @GetMapping("/export-async/status/{taskId}")
     public Result<ExcelTaskStatus> getExportStatus(@PathVariable String taskId) {
         ExcelTaskStatus status = excelExportService.getTaskStatus(taskId);
@@ -175,6 +184,7 @@ public class UserController {
     /**
      * 下载异步导出的文件
      */
+    @SaCheckPermission("user:export")
     @GetMapping("/export-async/download/{taskId}")
     public void downloadExportFile(@PathVariable String taskId, HttpServletResponse response) throws IOException {
         // 1. 查询任务状态

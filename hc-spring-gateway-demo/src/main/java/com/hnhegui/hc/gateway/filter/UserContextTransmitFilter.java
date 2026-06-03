@@ -1,6 +1,5 @@
 package com.hnhegui.hc.gateway.filter;
 
-import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpUtil;
 import com.hnhegui.hc.context.constant.UserContextConstant;
 import com.hnhegui.hc.context.core.UserContext;
@@ -16,21 +15,19 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
-import java.util.List;
-
 import static com.hnhegui.hc.common.constant.CommonConstant.USER_CONTEXT;
 
 /**
  * 网关用户上下文转发过滤器
- * 从 Sa-Token 提取用户信息，加密后写入请求 Header
+ * 在 Sa-Token 校验通过后，从 Sa-Token 提取用户信息，加密后写入请求 Header 透传给下游服务
+ * 必须运行在 SaReactorFilter 之后（框架的 SaReactorFilter 无 @Order，默认为 LOWEST_PRECEDENCE）
  *
  * @author hecong
  * @since 2026/4/10
  */
 @Slf4j
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 100)
+@Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class UserContextTransmitFilter implements WebFilter {
 
     @Override
@@ -38,23 +35,18 @@ public class UserContextTransmitFilter implements WebFilter {
         ServerHttpRequest request = exchange.getRequest();
 
         try {
-            // 1. 设置 Sa-Token 上下文
-            SaReactorSyncHolder.setContext(exchange);
-
-            // 2. 检查是否已登录
+            // 1. 检查是否已登录（此时 SaReactorFilter 已完成 Token 校验）
             if (!StpUtil.isLogin()) {
-                return chain.filter(exchange)
-                    // 登录态不成立也要清理
-                    .doFinally(s -> SaReactorSyncHolder.clearContext());
+                return chain.filter(exchange);
             }
 
-            // 3. 构建用户上下文
+            // 2. 构建用户上下文
             UserContext userContext = buildUserContext();
 
-            // 4. 加密
+            // 3. 加密
             String encrypted = UserContextEncryptUtil.encrypt(userContext);
 
-            // 5. 改写请求头
+            // 4. 改写请求头
             ServerHttpRequest modifiedRequest = request.mutate()
                 .header(UserContextConstant.DEFAULT_HEADER_NAME, encrypted)
                 .header(UserContextConstant.DEFAULT_ENCRYPTED_HEADER_NAME, UserContextConstant.ENCRYPTED_VALUE)
@@ -64,31 +56,26 @@ public class UserContextTransmitFilter implements WebFilter {
                 .request(modifiedRequest)
                 .build();
 
-            // 6. 正常执行 + 最终清理
+            // 5. 正常执行 + 最终清理
             return chain.filter(modifiedExchange)
-                .doFinally(signalType -> {
-                    // 清理两个上下文！！！
-                    UserContextHolder.clear();
-                    SaReactorSyncHolder.clearContext();
-                });
+                .doFinally(signalType -> UserContextHolder.clear());
 
         } catch (Exception e) {
             log.error("[用户上下文] 网关转发失败", e);
-            // 异常分支也必须清理
             UserContextHolder.clear();
-            SaReactorSyncHolder.clearContext();
             return chain.filter(exchange);
         }
     }
 
     /**
      * 从 Sa-Token 构建用户上下文
+     * 只传递基础身份信息，角色/权限由下游服务自行解析
      */
     private UserContext buildUserContext() {
         Object loginId = StpUtil.getLoginId();
-        Object userContext = StpUtil.getSession().get(USER_CONTEXT);
-        if (userContext != null) {
-            return (UserContext) userContext;
+        Object sessionContext = StpUtil.getSession().get(USER_CONTEXT);
+        if (sessionContext != null) {
+            return (UserContext) sessionContext;
         }
         Long userId = null;
         if (loginId instanceof Long) {
@@ -102,19 +89,8 @@ public class UserContextTransmitFilter implements WebFilter {
             userId = ((Integer) loginId).longValue();
         }
 
-        List<String> roles = StpUtil.getRoleList();
-        if (roles == null) {
-            roles = Collections.emptyList();
-        }
-
-        List<String> permissions = StpUtil.getPermissionList();
-        if (permissions == null) {
-            permissions = Collections.emptyList();
-        }
         return UserContext.builder()
             .userId(userId)
-            .roles(roles)
-            .permissions(permissions)
             .loginType(StpUtil.getLoginType())
             .token(StpUtil.getTokenValue())
             .build();

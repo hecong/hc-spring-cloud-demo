@@ -27,6 +27,7 @@ import com.hnhegui.hc.controller.log.response.LoginLogResponse;
 import com.hnhegui.hc.service.cuser.CUserService;
 import com.hnhegui.hc.service.log.LoginLogService;
 import com.hnhegui.hc.service.verify.AccountLockService;
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +66,7 @@ public class CUserController {
     /**
      * 获取个人信息
      */
+    @SaCheckLogin
     @GetMapping("/profile")
     public Result<CUserResponse> getProfile() {
         Long userId = UserContextHolder.getUserId();
@@ -75,7 +77,8 @@ public class CUserController {
     /**
      * 修改个人信息
      */
-    @PutMapping("/profile")
+    @SaCheckLogin
+    @PutMapping("/reset-profile")
     public Result<CUserResponse> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
         Long userId = UserContextHolder.getUserId();
         CUserBO bo = cUserService.updateProfile(userId, request.getNickname(), request.getAvatar(),
@@ -86,7 +89,8 @@ public class CUserController {
     /**
      * 修改密码
      */
-    @PutMapping("/password")
+    @SaCheckLogin
+    @PutMapping("/reset-password")
     public Result<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         Long userId = UserContextHolder.getUserId();
         cUserService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
@@ -96,7 +100,8 @@ public class CUserController {
     /**
      * 更换手机号
      */
-    @PutMapping("/phone")
+    @SaCheckLogin
+    @PutMapping("/reset-phone")
     public Result<Void> changePhone(@Valid @RequestBody ChangePhoneRequest request) {
         Long userId = UserContextHolder.getUserId();
         cUserService.changePhone(userId, request.getNewPhone());
@@ -106,7 +111,8 @@ public class CUserController {
     /**
      * 更换邮箱
      */
-    @PutMapping("/email")
+    @SaCheckLogin
+    @PutMapping("/reset-email")
     public Result<Void> changeEmail(@Valid @RequestBody ChangeEmailRequest request) {
         Long userId = UserContextHolder.getUserId();
         cUserService.changeEmail(userId, request.getNewEmail());
@@ -116,6 +122,7 @@ public class CUserController {
     /**
      * 查看第三方绑定
      */
+    @SaCheckLogin
     @GetMapping("/third-party")
     public Result<List<CUserThirdPartyResponse>> getThirdPartyBindings() {
         Long userId = UserContextHolder.getUserId();
@@ -126,6 +133,7 @@ public class CUserController {
     /**
      * 解绑第三方
      */
+    @SaCheckLogin
     @PostMapping("/third-party/unbind")
     public Result<Void> unbindThirdParty(@Valid @RequestBody UnbindThirdPartyRequest request) {
         Long userId = UserContextHolder.getUserId();
@@ -136,6 +144,7 @@ public class CUserController {
     /**
      * 查看登录记录（近30天）
      */
+    @SaCheckLogin
     @GetMapping("/login-records")
     public Result<PageData<LoginLogResponse>> getLoginRecords(LoginLogPageRequest request) {
         Long userId = UserContextHolder.getUserId();
@@ -148,6 +157,7 @@ public class CUserController {
     /**
      * 退出所有设备登录
      */
+    @SaCheckLogin
     @PostMapping("/logout-all")
     public Result<Void> logoutAll() {
         Long userId = UserContextHolder.getUserId();
@@ -159,6 +169,7 @@ public class CUserController {
     /**
      * 设置默认登录身份
      */
+    @SaCheckLogin
     @PutMapping("/identity-default")
     public Result<Void> setIdentityDefault(@Valid @RequestBody SetIdentityDefaultRequest request) {
         Long userId = UserContextHolder.getUserId();

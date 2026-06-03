@@ -1,6 +1,7 @@
 package com.hnhegui.hc.service.role.impl;
 
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hc.framework.mybatis.service.BaseServiceImpl;
 import com.hnhegui.hc.controller.role.converter.RoleConverter;
 import com.hnhegui.hc.entity.role.Role;
@@ -10,6 +11,7 @@ import com.hnhegui.hc.controller.role.response.RoleResponse;
 import com.hnhegui.hc.mapper.role.RoleMapper;
 import com.hnhegui.hc.mapper.role.RolePermissionMapper;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
+import com.hnhegui.hc.service.auth.PermissionCacheRefreshService;
 import com.hnhegui.hc.service.role.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
     private final UserRoleMapper userRoleMapper;
     private final RolePermissionMapper rolePermissionMapper;
     private final TransactionTemplate transactionTemplate;
+    private final PermissionCacheRefreshService permissionCacheRefreshService;
 
 
     @Override
@@ -48,7 +51,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             })
             .toList();
 
-        return Boolean.TRUE.equals(transactionTemplate.execute(status -> {
+        boolean result = Boolean.TRUE.equals(transactionTemplate.execute(status -> {
             // 物理删除该角色的所有权限关联
             rolePermissionMapper.deletePhysicalByRoleId(roleId);
 
@@ -60,6 +63,11 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             // 批量插入新的权限关联
             return rolePermissionMapper.insertBatch(newRolePermissions) > 0;
         }));
+
+        // 刷新该角色下所有用户的权限缓存
+        permissionCacheRefreshService.refreshByRoleId(roleId);
+
+        return result;
     }
 
     @Override
@@ -79,7 +87,22 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
 
     @Override
     public boolean deleteRole(Long id) {
-        return roleMapper.deleteById(id) > 0;
+        // 先查出受影响的用户
+        List<Long> affectedUserIds = userRoleMapper.selectUserIdsByRoleId(id);
+
+        boolean result = Boolean.TRUE.equals(transactionTemplate.execute(status -> {
+            rolePermissionMapper.deletePhysicalByRoleId(id);
+            userRoleMapper.delete(Wrappers.<com.hnhegui.hc.entity.user.UserRole>lambdaQuery()
+                .eq(com.hnhegui.hc.entity.user.UserRole::getRoleId, id));
+            return roleMapper.deleteById(id) > 0;
+        }));
+
+        // 刷新受影响用户的权限缓存
+        if (result && !affectedUserIds.isEmpty()) {
+            permissionCacheRefreshService.refreshUsers(affectedUserIds);
+        }
+
+        return result;
     }
 
     @Override

@@ -86,6 +86,19 @@
             <artifactId>hc-spring-user-context-core</artifactId>
         </dependency>
 
+        <!-- Sa-Token 权限控制 -->
+        <dependency>
+            <groupId>com.hnhegui.framework</groupId>
+            <artifactId>hc-satoken-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- 用户服务 Feign 客户端（获取角色/权限数据） -->
+        <dependency>
+            <groupId>com.hnhegui.hc</groupId>
+            <artifactId>hc-spring-user-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

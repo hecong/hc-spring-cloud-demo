@@ -41,5 +41,22 @@ public interface UserFeignClient {
     @GetMapping("/api/internal/user/getByUsername/{username}")
     UserDTO getUserByUsername(@PathVariable("username") String username);
 
+    /**
+     * 根据用户ID获取角色编码列表
+     *
+     * @param userId 用户ID
+     * @return 角色编码列表
+     */
+    @GetMapping("/api/internal/user/roles/{userId}")
+    List<String> getRoleCodesByUserId(@PathVariable("userId") Long userId);
+
+    /**
+     * 根据用户ID获取权限编码列表
+     *
+     * @param userId 用户ID
+     * @return 权限编码列表
+     */
+    @GetMapping("/api/internal/user/permissions/{userId}")
+    List<String> getPermissionCodesByUserId(@PathVariable("userId") Long userId);
 
 }

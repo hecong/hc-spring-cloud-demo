@@ -65,10 +65,7 @@ public class PasswordService {
         }
         // 检查是否为手机号片段（连续6位以上数字）
         String digits = password.replaceAll("[^0-9]", "");
-        if (digits.length() >= 6 && digits.length() <= 11) {
-            return true;
-        }
-        return false;
+        return digits.length() >= 6 && digits.length() <= 11;
     }
 
     /**

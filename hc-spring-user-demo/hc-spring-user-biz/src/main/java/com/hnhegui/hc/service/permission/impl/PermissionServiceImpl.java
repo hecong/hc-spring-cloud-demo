@@ -1,23 +1,23 @@
 package com.hnhegui.hc.service.permission.impl;
 
-import com.hc.framework.common.model.DynamicAuthRoute;
 import com.hc.framework.mybatis.service.BaseServiceImpl;
-import com.hc.framework.redis.util.RedisCacheUtils;
-import com.hnhegui.hc.common.constant.CommonCacheConstants;
 import com.hnhegui.hc.controller.permission.converter.PermissionConverter;
 import com.hnhegui.hc.entity.permission.Permission;
+import com.hnhegui.hc.entity.role.RolePermission;
 import com.hnhegui.hc.controller.permission.request.PermissionRequest;
 import com.hnhegui.hc.controller.permission.response.PermissionResponse;
 import com.hnhegui.hc.mapper.permission.PermissionMapper;
 import com.hnhegui.hc.mapper.role.RolePermissionMapper;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
-import com.hnhegui.hc.publisher.MessagePublisher;
+import com.hnhegui.hc.service.auth.PermissionCacheRefreshService;
 import com.hnhegui.hc.service.permission.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +28,8 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
     private final PermissionMapper permissionMapper;
     private final RolePermissionMapper rolePermissionMapper;
     private final UserRoleMapper userRoleMapper;
-    private final RedisCacheUtils redisCacheUtils;
-    private final MessagePublisher messagePublisher;
+    private final TransactionTemplate transactionTemplate;
+    private final PermissionCacheRefreshService permissionCacheRefreshService;
 
     @Override
     public List<PermissionResponse> getPermissionsByRoleId(Long roleId) {
@@ -47,8 +47,7 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
         if (roleIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Long> permissionIds = rolePermissionMapper.selectPermissionIdsByRoleIds(roleIds)
-            .stream().collect(Collectors.toSet()).stream().toList();
+        List<Long> permissionIds = new HashSet<>(rolePermissionMapper.selectPermissionIdsByRoleIds(roleIds)).stream().toList();
         if (permissionIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -73,7 +72,30 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
 
     @Override
     public boolean deletePermission(Long id) {
-        return permissionMapper.deleteById(id) > 0;
+        // 查找哪些角色拥有该权限
+        List<Long> affectedRoleIds = rolePermissionMapper.selectList(
+                com.baomidou.mybatisplus.core.toolkit.Wrappers.<RolePermission>lambdaQuery()
+                    .select(RolePermission::getRoleId)
+                    .eq(RolePermission::getPermissionId, id))
+            .stream().map(RolePermission::getRoleId).toList();
+
+        // 查找这些角色下的所有用户
+        java.util.Set<Long> affectedUserIds = new java.util.LinkedHashSet<>();
+        for (Long roleId : affectedRoleIds) {
+            affectedUserIds.addAll(userRoleMapper.selectUserIdsByRoleId(roleId));
+        }
+
+        boolean result = Boolean.TRUE.equals(transactionTemplate.execute(status -> {
+            rolePermissionMapper.deleteByPermissionId(id);
+            return permissionMapper.deleteById(id) > 0;
+        }));
+
+        // 刷新受影响用户的权限缓存
+        if (result && !affectedUserIds.isEmpty()) {
+            permissionCacheRefreshService.refreshUsers(affectedUserIds.stream().toList());
+        }
+
+        return result;
     }
 
     @Override
@@ -86,28 +108,6 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
     public List<PermissionResponse> listPermissions() {
         List<Permission> permissions = permissionMapper.selectList(null);
         return PermissionConverter.INSTANCE.toResponseList(permissions);
-    }
-
-    @Override
-    public void initDynamicAuthRouteCache() {
-        // 清除全部缓存
-        redisCacheUtils.delete(CommonCacheConstants.DYNAMIC_AUTH);
-        log.info("===============动态路由缓存清除完成=================");
-        List<Permission> permissions = permissionMapper.selectList(null);
-        for (Permission permission : permissions) {
-            DynamicAuthRoute dynamicAuthRoute = DynamicAuthRoute.builder().enabled(true)
-                .path(permission.getPath())
-                .requireLogin(true)
-                .requirePermissions(List.of(permission.getCode()))
-                .build();
-            redisCacheUtils.lPush(CommonCacheConstants.DYNAMIC_AUTH, dynamicAuthRoute);
-        }
-        log.info("===============动态路由缓存初始化完成=================");
-        List<DynamicAuthRoute> dynamicAuthRouteList = redisCacheUtils.lRange(CommonCacheConstants.DYNAMIC_AUTH, 0, -1);
-        log.info("===============动态路由缓存内容=================={}", dynamicAuthRouteList);
-        Long refresh = messagePublisher.publish(CommonCacheConstants.GATEWAY_ROUTE_REFRESH_CHANNEL, "refresh");
-        log.info("===============订单创建消息发送完成==================");
-        log.info("===============动态路由缓存刷新结果=================={}", refresh);
     }
 
     @Override

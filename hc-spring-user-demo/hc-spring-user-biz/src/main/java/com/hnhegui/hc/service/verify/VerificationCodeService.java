@@ -173,7 +173,7 @@ public class VerificationCodeService {
      */
     private boolean isInBlacklist(String target) {
         String key = "auth:code:blacklist:" + target;
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+        return redisTemplate.hasKey(key);
     }
 
     /**

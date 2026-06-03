@@ -1,5 +1,6 @@
 package com.hnhegui.hc.controller.log;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hc.framework.mybatis.model.PageData;
 import com.hc.framework.web.model.Result;
@@ -22,6 +23,7 @@ public class LogController {
     /**
      * 登录日志分页查询
      */
+    @SaCheckPermission("log:list")
     @GetMapping("/login/page")
     public Result<PageData<LoginLogResponse>> queryLoginLogs(LoginLogPageRequest request) {
         LoginLogPageQueryBO queryBO = LoginLogConverter.INSTANCE.pageRequestToPageBo(request);

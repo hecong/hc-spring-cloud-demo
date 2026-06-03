@@ -1,5 +1,6 @@
 package com.hnhegui.hc.controller.permission;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.hc.framework.web.model.Result;
 import com.hnhegui.hc.controller.permission.request.PermissionRequest;
 import com.hnhegui.hc.controller.permission.response.PermissionResponse;
@@ -17,6 +18,7 @@ public class PermissionController {
     /**
      * 获取权限列表
      */
+    @SaCheckPermission("permission:list")
     @GetMapping("/list")
     public Result<List<PermissionResponse>> list() {
         List<PermissionResponse> permissions = permissionService.listPermissions();
@@ -26,6 +28,7 @@ public class PermissionController {
     /**
      * 添加权限
      */
+    @SaCheckPermission("permission:add")
     @PostMapping("/add")
     public Result<PermissionResponse> add(@RequestBody PermissionRequest permissionRequest) {
         PermissionResponse permissionResponse = permissionService.savePermission(permissionRequest);
@@ -35,6 +38,7 @@ public class PermissionController {
      * 编辑权限
      */
 
+    @SaCheckPermission("permission:edit")
     @PutMapping("/edit/{id}")
     public Result<PermissionResponse> edit(@PathVariable Long id, @RequestBody PermissionRequest permissionRequest) {
         PermissionResponse permissionResponse = permissionService.updatePermission(id, permissionRequest);
@@ -44,6 +48,7 @@ public class PermissionController {
     /**
      * 删除权限
      */
+    @SaCheckPermission("permission:delete")
     @DeleteMapping("/delete/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         boolean success = permissionService.deletePermission(id);
@@ -57,19 +62,10 @@ public class PermissionController {
     /**
      * 根据id获取权限
      */
+    @SaCheckPermission("permission:list")
     @GetMapping("/get/{id}")
     public Result<PermissionResponse> get(@PathVariable Long id) {
         PermissionResponse permissionResponse = permissionService.getPermissionById(id);
         return Result.success(permissionResponse);
-    }
-
-
-    /**
-     * 根据菜单初始化路由权限缓存
-     */
-    @PostMapping("/init")
-    public Result<Void> initDynamicAuthRouteCache(){
-        permissionService.initDynamicAuthRouteCache();
-        return Result.success();
     }
 }

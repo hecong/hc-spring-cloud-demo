@@ -22,6 +22,12 @@
     </properties>
 
     <dependencies>
+        <!-- 框架通用模块（UserContextPermissionProvider SPI） -->
+        <dependency>
+            <groupId>com.hnhegui.framework</groupId>
+            <artifactId>hc-common-spring-boot-starter</artifactId>
+        </dependency>
+
         <!-- Spring Boot Web（提供拦截器、注解支持） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

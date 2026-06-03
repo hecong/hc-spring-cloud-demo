@@ -4,7 +4,6 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.hc.framework.satoken.util.SaTokenHelper;
 import com.hc.framework.web.exception.BusinessException;
 import com.hnhegui.hc.bo.auth.CUserLoginInfoBO;
-import com.hnhegui.hc.config.RsaKeyConfig;
 import com.hnhegui.hc.bo.auth.CurrentUserInfoBO;
 import com.hnhegui.hc.bo.auth.EnterpriseUserLoginInfoBO;
 import com.hnhegui.hc.bo.auth.IdentityItemBO;
@@ -16,9 +15,9 @@ import com.hnhegui.hc.bo.user.UserBO;
 import com.hnhegui.hc.common.enums.CUserStatusEnum;
 import com.hnhegui.hc.common.enums.EnterpriseStatusEnum;
 import com.hnhegui.hc.common.enums.EnterpriseUserStatusEnum;
-import com.hnhegui.hc.common.enums.LoginStatusEnum;
 import com.hnhegui.hc.common.enums.UserTypeEnum;
 import com.hnhegui.hc.common.enums.VerificationCodeSceneEnum;
+import com.hnhegui.hc.config.RsaKeyConfig;
 import com.hnhegui.hc.context.core.UserContext;
 import com.hnhegui.hc.context.core.UserContextHolder;
 import com.hnhegui.hc.service.cuser.CUserService;
@@ -206,13 +205,13 @@ public class AuthServiceImpl implements AuthService {
         // 8. 密码正确，重置错误计数
         accountLockService.resetPasswordErrorCount(UserTypeEnum.B.getCode(), username);
 
-        // 9. 执行登录
-        saTokenHelper.login(eUser.getId());
-
-        // 10. 互踢策略检查
+        // 9. 互踢策略检查（先踢旧会话，再创建新 Token）
         if (enterpriseService.isLoginMutualExclusion(enterprise.getId())) {
             StpUtil.kickout(eUser.getId());
         }
+
+        // 10. 执行登录
+        saTokenHelper.login(eUser.getId());
 
         // 11. 构建用户上下文
         setBUserContext(eUser, enterprise);
@@ -305,7 +304,7 @@ public class AuthServiceImpl implements AuthService {
         Map<Long, EnterpriseBO> enterpriseMap = enterpriseIds.stream()
             .collect(Collectors.toMap(
                 id -> id,
-                id -> enterpriseService.getEnterpriseById(id)
+                enterpriseService::getEnterpriseById
             ));
 
         List<IdentityItemBO> identityList = new ArrayList<>();
@@ -364,7 +363,7 @@ public class AuthServiceImpl implements AuthService {
             Map<Long, EnterpriseBO> enterpriseMap = enterpriseIds.stream()
                 .collect(Collectors.toMap(
                     id -> id,
-                    id -> enterpriseService.getEnterpriseById(id)
+                    enterpriseService::getEnterpriseById
                 ));
 
             for (EnterpriseUserBO bUser : bUsers) {
@@ -546,6 +545,12 @@ public class AuthServiceImpl implements AuthService {
             .userType(UserTypeEnum.C.getCode());
 
         UserContext userContext = builder.build();
+
+        List<String> roleList = saTokenHelper.getRoleList();
+        List<String> permissionList = saTokenHelper.getPermissionList();
+        userContext.setRoles(roleList);
+        userContext.setPermissions(permissionList);
+
         StpUtil.getSession().set(USER_CONTEXT, userContext);
         UserContextHolder.set(userContext);
     }
@@ -623,7 +628,7 @@ public class AuthServiceImpl implements AuthService {
         Map<Long, EnterpriseBO> enterpriseMap = enterpriseIds.stream()
             .collect(Collectors.toMap(
                 id -> id,
-                id -> enterpriseService.getEnterpriseById(id)
+                enterpriseService::getEnterpriseById
             ));
 
         List<IdentityItemBO> identityList = new ArrayList<>();
