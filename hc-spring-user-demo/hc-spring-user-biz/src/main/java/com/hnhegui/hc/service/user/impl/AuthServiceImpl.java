@@ -20,6 +20,7 @@ import com.hnhegui.hc.common.enums.VerificationCodeSceneEnum;
 import com.hnhegui.hc.config.RsaKeyConfig;
 import com.hnhegui.hc.context.core.UserContext;
 import com.hnhegui.hc.context.core.UserContextHolder;
+import com.hnhegui.hc.mapper.dept.SysUserDeptMapper;
 import com.hnhegui.hc.service.cuser.CUserService;
 import com.hnhegui.hc.service.enterprise.EnterpriseService;
 import com.hnhegui.hc.service.enterprise.EnterpriseUserService;
@@ -58,6 +59,7 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationCodeService verificationCodeService;
     private final LoginLogService loginLogService;
     private final RsaKeyConfig rsaKeyConfig;
+    private final SysUserDeptMapper sysUserDeptMapper;
 
     // ====================== C端登录 ======================
 
@@ -551,6 +553,15 @@ public class AuthServiceImpl implements AuthService {
         userContext.setRoles(roleList);
         userContext.setPermissions(permissionList);
 
+        // 填充用户所属部门ID（C端用户可能无部门）
+        try {
+            List<Long> deptIds = sysUserDeptMapper.selectDeptIdsByUserId(cUser.getId());
+            userContext.setDeptIds(deptIds);
+        } catch (Exception e) {
+            log.warn("获取C端用户部门信息失败 userId={}", cUser.getId(), e);
+            userContext.setDeptIds(List.of());
+        }
+
         StpUtil.getSession().set(USER_CONTEXT, userContext);
         UserContextHolder.set(userContext);
     }
@@ -575,6 +586,15 @@ public class AuthServiceImpl implements AuthService {
         List<String> permissionList = saTokenHelper.getPermissionList();
         userContext.setRoles(roleList);
         userContext.setPermissions(permissionList);
+
+        // 填充用户所属部门ID
+        try {
+            List<Long> deptIds = sysUserDeptMapper.selectDeptIdsByUserId(eUser.getId());
+            userContext.setDeptIds(deptIds);
+        } catch (Exception e) {
+            log.warn("获取B端用户部门信息失败 userId={}", eUser.getId(), e);
+            userContext.setDeptIds(List.of());
+        }
 
         StpUtil.getSession().set(USER_CONTEXT, userContext);
         UserContextHolder.set(userContext);

@@ -97,6 +97,16 @@ public class UserContext implements Serializable {
     private String enterpriseCode;
 
     /**
+     * 用户所属部门ID列表
+     */
+    private List<Long> deptIds;
+
+    /**
+     * 是否超级管理员（true 则跳过所有数据权限）
+     */
+    private Boolean isSuperAdmin;
+
+    /**
      * 判断用户是否已登录
      */
     @JsonIgnore
