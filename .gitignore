@@ -42,3 +42,4 @@ build/
 /logs/
 /.qoder/
 /%USERPROFILE%/
+/.codegraph/

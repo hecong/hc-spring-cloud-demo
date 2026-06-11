@@ -1,6 +1,7 @@
 package com.hnhegui.hc.context.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.hnhegui.hc.context.core.UserContext;
 import lombok.Getter;
 
@@ -33,11 +34,7 @@ public class UserContextEncryptUtil {
      */
     @Getter
     private static String secretKey;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    static {
-        OBJECT_MAPPER.findAndRegisterModules();
-    }
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().findAndAddModules().build();
 
     private UserContextEncryptUtil() {
     }
