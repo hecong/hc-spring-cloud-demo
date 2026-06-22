@@ -85,7 +85,7 @@ public class OrderTimeoutConsumer extends BaseMqConsumer<OrderMessageDTO> {
                 MqConstants.TOPIC_TRANSACTION, MqConstants.TAG_CANCELLED, cancelDto,
                 ctx -> {
                     // 同一事务内持久化消息日志（供通用 Checker 回查）
-                    transactionLogStore.save(ctx.getMessage());
+                    transactionLogStore.save(ctx.message());
                     order.setOrderStatus(OrderStatusEnum.CANCELLED.getCode());
                     order.setCancelTime(LocalDateTime.now());
                     orderMapper.updateById(order);

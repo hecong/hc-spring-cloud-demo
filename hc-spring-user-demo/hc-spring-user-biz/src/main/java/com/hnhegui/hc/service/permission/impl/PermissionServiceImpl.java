@@ -2,10 +2,10 @@ package com.hnhegui.hc.service.permission.impl;
 
 import com.hc.framework.mybatis.service.BaseServiceImpl;
 import com.hnhegui.hc.controller.permission.converter.PermissionConverter;
-import com.hnhegui.hc.entity.permission.Permission;
-import com.hnhegui.hc.entity.role.RolePermission;
 import com.hnhegui.hc.controller.permission.request.PermissionRequest;
 import com.hnhegui.hc.controller.permission.response.PermissionResponse;
+import com.hnhegui.hc.entity.permission.Permission;
+import com.hnhegui.hc.entity.role.RolePermission;
 import com.hnhegui.hc.mapper.permission.PermissionMapper;
 import com.hnhegui.hc.mapper.role.RolePermissionMapper;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
@@ -19,7 +19,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
