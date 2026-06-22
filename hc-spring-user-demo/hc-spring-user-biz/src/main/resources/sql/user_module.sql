@@ -1,13 +1,14 @@
 -- ============================================================
--- C端/B端用户模块数据库脚本
+-- C端/B端用户模块数据库脚本（雪花算法主键，无外键）
 -- 所有表均包含 BaseEntity 基础字段：id, creator, updater, create_time, update_time, deleted
+-- 数据删除由应用层控制
 -- ============================================================
 
 -- ============================================================
 -- 1. C端用户表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.c_user (
-    id                   BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id                   BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     phone                VARCHAR(20)  NOT NULL COMMENT '手机号',
     email                VARCHAR(100) NULL COMMENT '邮箱',
     username             VARCHAR(50)  NULL COMMENT '用户名',
@@ -35,7 +36,7 @@ CREATE TABLE IF NOT EXISTS user.c_user (
 -- 2. C端第三方绑定表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.c_user_third_party (
-    id              BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id              BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     user_id         BIGINT       NOT NULL COMMENT 'C端用户ID',
     platform        VARCHAR(20)  NOT NULL COMMENT '第三方平台：wechat/alipay/qq',
     open_id         VARCHAR(100) NOT NULL COMMENT '第三方openId',
@@ -47,8 +48,7 @@ CREATE TABLE IF NOT EXISTS user.c_user_third_party (
     create_time     DATETIME     DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
     update_time     DATETIME     DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     deleted         TINYINT      DEFAULT 0 NOT NULL COMMENT '逻辑删除：0-未删除，1-已删除',
-    CONSTRAINT uk_third_party_openid UNIQUE (platform, open_id),
-    CONSTRAINT fk_third_party_user FOREIGN KEY (user_id) REFERENCES user.c_user(id) ON DELETE CASCADE
+    CONSTRAINT uk_third_party_openid UNIQUE (platform, open_id)
 ) COMMENT 'C端第三方绑定表' CHARSET = utf8mb4;
 
 CREATE INDEX idx_c_user_third_party_user_id ON user.c_user_third_party(user_id);
@@ -57,7 +57,7 @@ CREATE INDEX idx_c_user_third_party_user_id ON user.c_user_third_party(user_id);
 -- 3. B端企业表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.biz_enterprise (
-    id                      BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id                      BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     enterprise_code         VARCHAR(8)   NOT NULL COMMENT '企业编码(8位数字+字母)',
     name                    VARCHAR(100) NOT NULL COMMENT '企业名称',
     contact_person          VARCHAR(50)  NULL COMMENT '联系人',
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS user.biz_enterprise (
 -- 4. B端企业用户表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.biz_enterprise_user (
-    id                     BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id                     BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     enterprise_id          BIGINT       NOT NULL COMMENT '企业ID',
     username               VARCHAR(50)  NOT NULL COMMENT '用户名',
     password               VARCHAR(100) NOT NULL COMMENT '密码(BCrypt)',
@@ -98,8 +98,7 @@ CREATE TABLE IF NOT EXISTS user.biz_enterprise_user (
     create_time            DATETIME     DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
     update_time            DATETIME     DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     deleted                TINYINT      DEFAULT 0 NOT NULL COMMENT '逻辑删除：0-未删除，1-已删除',
-    CONSTRAINT uk_euser_ent_username UNIQUE (enterprise_id, username),
-    CONSTRAINT fk_euser_enterprise FOREIGN KEY (enterprise_id) REFERENCES user.biz_enterprise(id) ON DELETE CASCADE
+    CONSTRAINT uk_euser_ent_username UNIQUE (enterprise_id, username)
 ) COMMENT 'B端企业用户表' CHARSET = utf8mb4;
 
 CREATE INDEX idx_euser_enterprise_id ON user.biz_enterprise_user(enterprise_id);
@@ -109,7 +108,7 @@ CREATE INDEX idx_euser_phone ON user.biz_enterprise_user(phone);
 -- 5. 统一登录日志表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.sys_login_log (
-    id              BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id              BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     user_type       VARCHAR(10)  NOT NULL COMMENT '用户类型：C-C端，B-B端，P-平台',
     user_id         BIGINT       NOT NULL COMMENT '用户ID',
     account         VARCHAR(100) NOT NULL COMMENT '登录账号',
@@ -133,7 +132,7 @@ CREATE INDEX idx_login_log_time ON user.sys_login_log(login_time);
 -- 6. B端操作日志表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.sys_operation_log (
-    id                BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id                BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     enterprise_id     BIGINT       NOT NULL COMMENT '企业ID',
     user_id           BIGINT       NOT NULL COMMENT '操作用户ID',
     username          VARCHAR(50)  NOT NULL COMMENT '操作用户名',
@@ -155,7 +154,7 @@ CREATE INDEX idx_operation_log_time ON user.sys_operation_log(create_time);
 -- 7. 验证码记录表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.sys_verification_code (
-    id          BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id          BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     target      VARCHAR(100) NOT NULL COMMENT '发送目标(手机号/邮箱)',
     code        VARCHAR(10)  NOT NULL COMMENT '验证码',
     scene       VARCHAR(20)  NOT NULL COMMENT '场景：login/register/reset',
@@ -175,7 +174,7 @@ CREATE INDEX idx_verify_code_target ON user.sys_verification_code(target, scene)
 -- 8. 账号锁定记录表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS user.sys_account_lock (
-    id          BIGINT       AUTO_INCREMENT COMMENT '主键' PRIMARY KEY,
+    id          BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
     user_type   VARCHAR(10)  NOT NULL COMMENT '用户类型：C-C端，B-B端',
     user_id     BIGINT       NOT NULL COMMENT '用户ID',
     account     VARCHAR(100) NOT NULL COMMENT '锁定账号',
@@ -192,7 +191,67 @@ CREATE TABLE IF NOT EXISTS user.sys_account_lock (
 CREATE INDEX idx_account_lock_user ON user.sys_account_lock(user_type, user_id);
 
 -- ============================================================
--- 9. 修改现有 sys_role 表，增加 enterprise_id 字段
+-- 9. 部门表
 -- ============================================================
-ALTER TABLE user.sys_role ADD COLUMN enterprise_id BIGINT NULL COMMENT '企业ID，NULL表示平台角色' AFTER description;
-CREATE INDEX idx_role_enterprise ON user.sys_role(enterprise_id);
+CREATE TABLE IF NOT EXISTS user.sys_dept (
+    id            BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
+    parent_id     BIGINT       DEFAULT 0 NOT NULL COMMENT '父部门ID（0=顶级部门）',
+    dept_name     VARCHAR(100) NOT NULL COMMENT '部门名称',
+    ancestors     VARCHAR(500) NULL COMMENT '祖级ID列表（逗号分隔，如 0,1,5）',
+    sort_order    INT          DEFAULT 0 NOT NULL COMMENT '排序',
+    status        TINYINT      DEFAULT 1 NOT NULL COMMENT '状态：0-禁用，1-正常',
+    enterprise_id BIGINT       NOT NULL COMMENT '企业ID（租户隔离）',
+    creator       VARCHAR(50)  NULL COMMENT '创建人',
+    updater       VARCHAR(50)  NULL COMMENT '更新人',
+    create_time   DATETIME     DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
+    update_time   DATETIME     DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    deleted       TINYINT      DEFAULT 0 NOT NULL COMMENT '逻辑删除：0-未删除，1-已删除'
+) COMMENT '部门表' CHARSET = utf8mb4;
+
+CREATE INDEX idx_sys_dept_parent ON user.sys_dept(parent_id);
+CREATE INDEX idx_sys_dept_enterprise ON user.sys_dept(enterprise_id);
+
+-- ============================================================
+-- 10. 用户-部门关联表（多对多）
+-- ============================================================
+CREATE TABLE IF NOT EXISTS user.sys_user_dept (
+    id            BIGINT NOT NULL COMMENT '主键' PRIMARY KEY,
+    user_id       BIGINT NOT NULL COMMENT '用户ID',
+    dept_id       BIGINT NOT NULL COMMENT '部门ID',
+    enterprise_id BIGINT NOT NULL COMMENT '企业ID（租户隔离）',
+    CONSTRAINT uk_user_dept UNIQUE (user_id, dept_id)
+) COMMENT '用户-部门关联表' CHARSET = utf8mb4;
+
+CREATE INDEX idx_sys_user_dept_dept ON user.sys_user_dept(dept_id);
+CREATE INDEX idx_sys_user_dept_enterprise ON user.sys_user_dept(enterprise_id);
+
+-- ============================================================
+-- 11. 角色-权限数据范围表
+-- ============================================================
+CREATE TABLE IF NOT EXISTS user.sys_role_permission_data_scope (
+    id            BIGINT       NOT NULL COMMENT '主键' PRIMARY KEY,
+    role_id       BIGINT       NOT NULL COMMENT '角色ID',
+    permission_id BIGINT       NOT NULL COMMENT '菜单/权限ID',
+    data_scope    VARCHAR(50)  NOT NULL COMMENT '数据范围：ALL|DEPT_AND_CHILDREN|CUSTOM_DEPT|CURRENT_DEPT|SELF',
+    enterprise_id BIGINT       NOT NULL COMMENT '企业ID（租户隔离）',
+    creator       VARCHAR(50)  NULL COMMENT '创建人',
+    updater       VARCHAR(50)  NULL COMMENT '更新人',
+    create_time   DATETIME     DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
+    update_time   DATETIME     DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    deleted       TINYINT      DEFAULT 0 NOT NULL COMMENT '逻辑删除：0-未删除，1-已删除',
+    CONSTRAINT uk_role_perm_scope UNIQUE (role_id, permission_id)
+) COMMENT '角色-权限数据范围表' CHARSET = utf8mb4;
+
+CREATE INDEX idx_scope_enterprise ON user.sys_role_permission_data_scope(enterprise_id);
+
+-- ============================================================
+-- 12. 角色-权限自定义部门范围明细表
+-- ============================================================
+CREATE TABLE IF NOT EXISTS user.sys_role_perm_dept_scope (
+    id       BIGINT NOT NULL COMMENT '主键' PRIMARY KEY,
+    scope_id BIGINT NOT NULL COMMENT '关联 sys_role_permission_data_scope.id',
+    dept_id  BIGINT NOT NULL COMMENT '指定可访问的部门ID'
+) COMMENT '角色-权限自定义部门范围明细表' CHARSET = utf8mb4;
+
+CREATE INDEX idx_dept_scope_scope ON user.sys_role_perm_dept_scope(scope_id);
+CREATE INDEX idx_dept_scope_dept ON user.sys_role_perm_dept_scope(dept_id);

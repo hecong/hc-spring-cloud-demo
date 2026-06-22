@@ -23,6 +23,7 @@ spring:
     import:
       - nacos:hc-order-service.yaml?group=DEFAULT_GROUP&refreshEnabled=true
       - nacos:hc-redis.yaml?group=DEFAULT_GROUP&refreshEnabled=true
+      - nacos:hc-rocketmq.yaml?group=DEFAULT_GROUP&refreshEnabled=true
 hc:
   satoken:
     exclude-paths:

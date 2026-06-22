@@ -2,11 +2,11 @@ package com.hnhegui.hc.controller.user;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hc.framework.common.model.Result;
 import com.hc.framework.excel.model.ExcelExportRequest;
 import com.hc.framework.excel.model.ExcelTaskStatus;
 import com.hc.framework.excel.service.ExcelExportService;
 import com.hc.framework.mybatis.model.PageData;
-import com.hc.framework.web.model.Result;
 import com.hnhegui.hc.bo.user.UserBO;
 import com.hnhegui.hc.controller.user.converter.UserConverter;
 import com.hnhegui.hc.controller.user.request.AssignRolesRequest;

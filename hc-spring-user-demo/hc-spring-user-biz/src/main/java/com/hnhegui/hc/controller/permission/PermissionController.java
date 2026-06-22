@@ -1,12 +1,20 @@
 package com.hnhegui.hc.controller.permission;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.hc.framework.web.model.Result;
+import com.hc.framework.common.model.Result;
 import com.hnhegui.hc.controller.permission.request.PermissionRequest;
 import com.hnhegui.hc.controller.permission.response.PermissionResponse;
 import com.hnhegui.hc.service.permission.PermissionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
@@ -34,6 +42,7 @@ public class PermissionController {
         PermissionResponse permissionResponse = permissionService.savePermission(permissionRequest);
         return Result.success(permissionResponse);
     }
+
     /**
      * 编辑权限
      */

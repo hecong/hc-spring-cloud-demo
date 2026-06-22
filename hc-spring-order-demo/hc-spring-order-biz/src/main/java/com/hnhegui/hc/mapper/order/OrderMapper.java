@@ -1,5 +1,6 @@
 package com.hnhegui.hc.mapper.order;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hnhegui.hc.entity.order.Order;
 import org.apache.ibatis.annotations.Param;
@@ -26,4 +27,15 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return 影响行数
      */
     int insertOrUpdateBatch(@Param("list") List<Order> list);
+
+    /**
+     * 根据订单编号查询订单
+     *
+     * @param orderNo 订单编号
+     * @return 订单实体
+     */
+    default Order selectByOrderNo(String orderNo) {
+        return selectOne(new LambdaQueryWrapper<Order>()
+                .eq(Order::getOrderNo, orderNo));
+    }
 }

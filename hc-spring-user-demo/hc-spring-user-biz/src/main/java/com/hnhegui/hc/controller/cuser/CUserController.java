@@ -1,9 +1,10 @@
 package com.hnhegui.hc.controller.cuser;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.hc.framework.web.model.Result;
+import com.hc.framework.common.model.Result;
 import com.hc.framework.mybatis.model.PageData;
-import com.hc.framework.web.util.ServletUtils;
 import com.hnhegui.hc.bo.cuser.CUserBO;
 import com.hnhegui.hc.bo.cuser.CUserThirdPartyBO;
 import com.hnhegui.hc.bo.log.LoginLogBO;
@@ -27,11 +28,14 @@ import com.hnhegui.hc.controller.log.response.LoginLogResponse;
 import com.hnhegui.hc.service.cuser.CUserService;
 import com.hnhegui.hc.service.log.LoginLogService;
 import com.hnhegui.hc.service.verify.AccountLockService;
-import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.stp.StpUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -50,7 +54,7 @@ public class CUserController {
     @PostMapping("/register")
     public Result<CUserResponse> register(@Valid @RequestBody CUserRegisterRequest request) {
         CUserBO bo = cUserService.register(request.getPhone(), request.getPassword(),
-                request.getEmail(), request.getUsername());
+            request.getEmail(), request.getUsername());
         return Result.success(CUserConverter.INSTANCE.toResponse(bo));
     }
 
@@ -82,7 +86,7 @@ public class CUserController {
     public Result<CUserResponse> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
         Long userId = UserContextHolder.getUserId();
         CUserBO bo = cUserService.updateProfile(userId, request.getNickname(), request.getAvatar(),
-                request.getGender(), request.getBirthday());
+            request.getGender(), request.getBirthday());
         return Result.success(CUserConverter.INSTANCE.toResponse(bo));
     }
 

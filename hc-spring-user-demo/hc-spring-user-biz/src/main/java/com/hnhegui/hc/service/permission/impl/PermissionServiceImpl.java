@@ -37,7 +37,7 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
         if (permissionIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Permission> permissions = permissionMapper.selectBatchIds(permissionIds);
+        List<Permission> permissions = permissionMapper.selectByIds(permissionIds);
         return PermissionConverter.INSTANCE.toResponseList(permissions);
     }
 
@@ -51,7 +51,7 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
         if (permissionIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Permission> permissions = permissionMapper.selectBatchIds(permissionIds);
+        List<Permission> permissions = permissionMapper.selectByIds(permissionIds);
         return PermissionConverter.INSTANCE.toResponseList(permissions);
     }
 

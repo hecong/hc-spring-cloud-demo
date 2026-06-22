@@ -1,10 +1,9 @@
 package com.hnhegui.hc.service.auth;
 
-import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.hc.framework.common.model.DataScopeInfo;
 import com.hc.framework.mybatis.constant.DataPermConstants;
 import com.hc.framework.mybatis.enums.DataScopeEnum;
-import com.hc.framework.mybatis.model.DataScopeInfo;
 import com.hc.framework.redis.util.RedisCacheUtils;
 import com.hnhegui.hc.entity.permission.Permission;
 import com.hnhegui.hc.entity.role.SysRolePermDataScope;
@@ -16,6 +15,7 @@ import com.hnhegui.hc.mapper.role.SysRolePermDeptScopeMapper;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.hutool.core.collection.CollUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -49,9 +49,13 @@ public class DataScopeService {
     private final SysDeptMapper sysDeptMapper;
     private final RedisCacheUtils redisCacheUtils;
 
-    /** 缓存 key 前缀 */
+    /**
+     * 缓存 key 前缀
+     */
     private static final String CACHE_PREFIX = "dataScope:";
-    /** 缓存 TTL */
+    /**
+     * 缓存 TTL
+     */
     private static final long CACHE_TTL_MINUTES = 10;
 
     /**

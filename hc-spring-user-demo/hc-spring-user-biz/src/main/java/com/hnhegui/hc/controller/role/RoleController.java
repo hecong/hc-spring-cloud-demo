@@ -1,7 +1,7 @@
 package com.hnhegui.hc.controller.role;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.hc.framework.web.model.Result;
+import com.hc.framework.common.model.Result;
 import com.hnhegui.hc.controller.role.request.AssignPermissionsRequest;
 import com.hnhegui.hc.controller.role.request.RoleRequest;
 import com.hnhegui.hc.controller.role.response.RoleResponse;

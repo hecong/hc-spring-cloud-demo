@@ -2,8 +2,8 @@ package com.hnhegui.hc.controller.log;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hc.framework.common.model.Result;
 import com.hc.framework.mybatis.model.PageData;
-import com.hc.framework.web.model.Result;
 import com.hnhegui.hc.bo.log.LoginLogBO;
 import com.hnhegui.hc.bo.log.LoginLogPageQueryBO;
 import com.hnhegui.hc.controller.log.converter.LoginLogConverter;

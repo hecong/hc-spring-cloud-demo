@@ -1,5 +1,6 @@
 package com.hnhegui.hc.mapper.order;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hnhegui.hc.entity.order.OrderLog;
 import org.apache.ibatis.annotations.Param;
@@ -26,4 +27,16 @@ public interface OrderLogMapper extends BaseMapper<OrderLog> {
      * @return 影响行数
      */
     int insertOrUpdateBatch(@Param("list") List<OrderLog> list);
+
+    /**
+     * 根据订单编号查询操作日志列表
+     *
+     * @param orderNo 订单编号
+     * @return 操作日志列表
+     */
+    default List<OrderLog> selectListByOrderNo(String orderNo) {
+        return selectList(new LambdaQueryWrapper<OrderLog>()
+                .eq(OrderLog::getOrderNo, orderNo)
+                .orderByDesc(OrderLog::getCreateTime));
+    }
 }

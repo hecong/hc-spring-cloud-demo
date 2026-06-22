@@ -1,6 +1,6 @@
 package com.hnhegui.hc.controller.auth;
 
-import com.hc.framework.web.model.Result;
+import com.hc.framework.common.model.Result;
 import com.hc.framework.web.util.ServletUtils;
 import com.hnhegui.hc.bo.auth.CurrentUserInfoBO;
 import com.hnhegui.hc.bo.auth.LoginResultBO;

@@ -1,8 +1,8 @@
 package com.hnhegui.hc.controller.enterprise;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hc.framework.common.model.Result;
 import com.hc.framework.mybatis.model.PageData;
-import com.hc.framework.web.model.Result;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.hnhegui.hc.bo.enterprise.EnterpriseBO;

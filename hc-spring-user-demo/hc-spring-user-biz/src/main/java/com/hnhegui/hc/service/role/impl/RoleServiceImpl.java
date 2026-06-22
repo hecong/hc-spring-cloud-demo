@@ -8,12 +8,13 @@ import com.hnhegui.hc.entity.role.Role;
 import com.hnhegui.hc.entity.role.RolePermission;
 import com.hnhegui.hc.controller.role.request.RoleRequest;
 import com.hnhegui.hc.controller.role.response.RoleResponse;
+import com.hnhegui.hc.event.RolePermissionChangedEvent;
 import com.hnhegui.hc.mapper.role.RoleMapper;
 import com.hnhegui.hc.mapper.role.RolePermissionMapper;
 import com.hnhegui.hc.mapper.user.UserRoleMapper;
-import com.hnhegui.hc.service.auth.PermissionCacheRefreshService;
 import com.hnhegui.hc.service.role.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -26,7 +27,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
     private final UserRoleMapper userRoleMapper;
     private final RolePermissionMapper rolePermissionMapper;
     private final TransactionTemplate transactionTemplate;
-    private final PermissionCacheRefreshService permissionCacheRefreshService;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -35,7 +36,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
         if (roleIds.isEmpty()) {
             return List.of();
         }
-        List<Role> roles = roleMapper.selectBatchIds(roleIds);
+        List<Role> roles = roleMapper.selectByIds(roleIds);
         return RoleConverter.INSTANCE.toResponseList(roles);
     }
 
@@ -64,8 +65,8 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             return rolePermissionMapper.insertBatch(newRolePermissions) > 0;
         }));
 
-        // 刷新该角色下所有用户的权限缓存
-        permissionCacheRefreshService.refreshByRoleId(roleId);
+        // 发布事件：刷新该角色下所有用户的权限缓存
+        eventPublisher.publishEvent(RolePermissionChangedEvent.ofPermAssigned(this, roleId));
 
         return result;
     }
@@ -97,9 +98,9 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             return roleMapper.deleteById(id) > 0;
         }));
 
-        // 刷新受影响用户的权限缓存
+        // 发布事件：刷新受影响用户的权限缓存
         if (result && !affectedUserIds.isEmpty()) {
-            permissionCacheRefreshService.refreshUsers(affectedUserIds);
+            eventPublisher.publishEvent(RolePermissionChangedEvent.ofRoleDeleted(this, affectedUserIds));
         }
 
         return result;
